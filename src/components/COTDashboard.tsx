@@ -22,12 +22,63 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
   ];
 
   const assets = [
-    { value: "EUR", label: "EUR/USD" },
-    { value: "GBP", label: "GBP/USD" },
-    { value: "JPY", label: "USD/JPY" },
-    { value: "GOLD", label: "Gold" },
-    { value: "OIL", label: "Crude Oil" },
+    // Major Currency Pairs
+    { value: "EUR", label: "EUR/USD", category: "Major Currencies" },
+    { value: "GBP", label: "GBP/USD", category: "Major Currencies" },
+    { value: "JPY", label: "USD/JPY", category: "Major Currencies" },
+    { value: "CHF", label: "USD/CHF", category: "Major Currencies" },
+    { value: "CAD", label: "USD/CAD", category: "Major Currencies" },
+    { value: "AUD", label: "AUD/USD", category: "Major Currencies" },
+    { value: "NZD", label: "NZD/USD", category: "Major Currencies" },
+    
+    // Cross Currency Pairs
+    { value: "EURGBP", label: "EUR/GBP", category: "Cross Currencies" },
+    { value: "EURJPY", label: "EUR/JPY", category: "Cross Currencies" },
+    { value: "EURCHF", label: "EUR/CHF", category: "Cross Currencies" },
+    { value: "GBPJPY", label: "GBP/JPY", category: "Cross Currencies" },
+    { value: "GBPCHF", label: "GBP/CHF", category: "Cross Currencies" },
+    { value: "CHFJPY", label: "CHF/JPY", category: "Cross Currencies" },
+    
+    // Exotic Currency Pairs
+    { value: "USDTRY", label: "USD/TRY", category: "Exotic Currencies" },
+    { value: "USDZAR", label: "USD/ZAR", category: "Exotic Currencies" },
+    { value: "USDMXN", label: "USD/MXN", category: "Exotic Currencies" },
+    { value: "USDSEK", label: "USD/SEK", category: "Exotic Currencies" },
+    { value: "USDNOK", label: "USD/NOK", category: "Exotic Currencies" },
+    { value: "USDPLN", label: "USD/PLN", category: "Exotic Currencies" },
+    { value: "USDSGD", label: "USD/SGD", category: "Exotic Currencies" },
+    { value: "USDHKD", label: "USD/HKD", category: "Exotic Currencies" },
+    
+    // Commodities
+    { value: "GOLD", label: "Gold", category: "Commodities" },
+    { value: "SILVER", label: "Silver", category: "Commodities" },
+    { value: "OIL", label: "Crude Oil (WTI)", category: "Commodities" },
+    { value: "BRENT", label: "Brent Oil", category: "Commodities" },
+    { value: "NATGAS", label: "Natural Gas", category: "Commodities" },
+    { value: "COPPER", label: "Copper", category: "Commodities" },
+    { value: "WHEAT", label: "Wheat", category: "Commodities" },
+    { value: "CORN", label: "Corn", category: "Commodities" },
+    { value: "SOYBEAN", label: "Soybeans", category: "Commodities" },
+    
+    // Indices
+    { value: "US30", label: "US30 (Dow Jones)", category: "Indices" },
+    { value: "NASDAQ", label: "NASDAQ 100", category: "Indices" },
+    { value: "SP500", label: "S&P 500", category: "Indices" },
+    { value: "RUSSELL", label: "Russell 2000", category: "Indices" },
+    { value: "DAX", label: "DAX 40", category: "Indices" },
+    { value: "FTSE", label: "FTSE 100", category: "Indices" },
+    { value: "NIKKEI", label: "Nikkei 225", category: "Indices" },
+    { value: "ASX", label: "ASX 200", category: "Indices" },
   ];
+
+  // Group assets by category for better organization
+  const groupedAssets = assets.reduce((acc, asset) => {
+    if (!acc[asset.category]) {
+      acc[asset.category] = [];
+    }
+    acc[asset.category].push(asset);
+    return acc;
+  }, {} as Record<string, typeof assets>);
 
   if (preview) {
     return (
@@ -70,14 +121,25 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
           <div className="flex justify-between items-center">
             <CardTitle className="text-white">Commitment of Traders (COT) Reports</CardTitle>
             <Select value={selectedAsset} onValueChange={setSelectedAsset}>
-              <SelectTrigger className="w-48 bg-gray-700 border-gray-600 text-white">
+              <SelectTrigger className="w-64 bg-gray-700 border-gray-600 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-700 border-gray-600">
-                {assets.map((asset) => (
-                  <SelectItem key={asset.value} value={asset.value} className="text-white">
-                    {asset.label}
-                  </SelectItem>
+              <SelectContent className="bg-gray-700 border-gray-600 max-h-80">
+                {Object.entries(groupedAssets).map(([category, categoryAssets]) => (
+                  <div key={category}>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {category}
+                    </div>
+                    {categoryAssets.map((asset) => (
+                      <SelectItem 
+                        key={asset.value} 
+                        value={asset.value} 
+                        className="text-white hover:bg-gray-600 pl-4"
+                      >
+                        {asset.label}
+                      </SelectItem>
+                    ))}
+                  </div>
                 ))}
               </SelectContent>
             </Select>
