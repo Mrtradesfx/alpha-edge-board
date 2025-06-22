@@ -1,8 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { Button } from "@/components/ui/button";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 import { useState } from "react";
+import { TrendingUp, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon } from "lucide-react";
 
 interface COTDashboardProps {
   preview?: boolean;
@@ -10,15 +12,35 @@ interface COTDashboardProps {
 
 const COTDashboard = ({ preview = false }: COTDashboardProps) => {
   const [selectedAsset, setSelectedAsset] = useState("EUR");
+  const [selectedAsset2, setSelectedAsset2] = useState("");
+  const [chartType, setChartType] = useState("line");
+  const [comparisonMode, setComparisonMode] = useState(false);
 
   // Mock COT data - in real app, this would come from Quandl API
-  const cotData = [
-    { date: "2024-01-01", commercial: 45000, nonCommercial: -42000, total: 3000 },
-    { date: "2024-01-08", commercial: 47000, nonCommercial: -44000, total: 3000 },
-    { date: "2024-01-15", commercial: 43000, nonCommercial: -40000, total: 3000 },
-    { date: "2024-01-22", commercial: 50000, nonCommercial: -47000, total: 3000 },
-    { date: "2024-01-29", commercial: 48000, nonCommercial: -45000, total: 3000 },
-    { date: "2024-02-05", commercial: 52000, nonCommercial: -49000, total: 3000 },
+  const generateCOTData = (asset: string, offset = 0) => [
+    { date: "2024-01-01", commercial: 45000 + offset, nonCommercial: -42000 + offset, total: 3000 + offset },
+    { date: "2024-01-08", commercial: 47000 + offset, nonCommercial: -44000 + offset, total: 3000 + offset },
+    { date: "2024-01-15", commercial: 43000 + offset, nonCommercial: -40000 + offset, total: 3000 + offset },
+    { date: "2024-01-22", commercial: 50000 + offset, nonCommercial: -47000 + offset, total: 3000 + offset },
+    { date: "2024-01-29", commercial: 48000 + offset, nonCommercial: -45000 + offset, total: 3000 + offset },
+    { date: "2024-02-05", commercial: 52000 + offset, nonCommercial: -49000 + offset, total: 3000 + offset },
+  ];
+
+  const cotData = generateCOTData(selectedAsset);
+  const cotData2 = generateCOTData(selectedAsset2, 5000);
+
+  // Combined data for comparison
+  const combinedData = cotData.map((item, index) => ({
+    ...item,
+    commercial2: cotData2[index]?.commercial || 0,
+    nonCommercial2: cotData2[index]?.nonCommercial || 0,
+  }));
+
+  // Pie chart data
+  const pieData = [
+    { name: "Commercial Long", value: Math.abs(cotData[cotData.length - 1]?.commercial || 0), fill: "#10b981" },
+    { name: "Non-Commercial Long", value: Math.abs(cotData[cotData.length - 1]?.nonCommercial || 0), fill: "#ef4444" },
+    { name: "Retail Traders", value: 15000, fill: "#3b82f6" },
   ];
 
   const assets = [
@@ -48,6 +70,12 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
     { value: "USDPLN", label: "USD/PLN", category: "Exotic Currencies" },
     { value: "USDSGD", label: "USD/SGD", category: "Exotic Currencies" },
     { value: "USDHKD", label: "USD/HKD", category: "Exotic Currencies" },
+    
+    // Cryptocurrencies
+    { value: "BTC", label: "Bitcoin", category: "Cryptocurrencies" },
+    { value: "ETH", label: "Ethereum", category: "Cryptocurrencies" },
+    { value: "LTC", label: "Litecoin", category: "Cryptocurrencies" },
+    { value: "XRP", label: "Ripple", category: "Cryptocurrencies" },
     
     // Commodities
     { value: "GOLD", label: "Gold", category: "Commodities" },
@@ -79,6 +107,156 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
     acc[asset.category].push(asset);
     return acc;
   }, {} as Record<string, typeof assets>);
+
+  const getAssetLabel = (value: string) => {
+    return assets.find(asset => asset.value === value)?.label || value;
+  };
+
+  const renderChart = () => {
+    const data = comparisonMode ? combinedData : cotData;
+    
+    switch (chartType) {
+      case "bar":
+        return (
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis 
+              dataKey="date" 
+              stroke="#9ca3af"
+              tick={{ fill: '#9ca3af', fontSize: 12 }}
+            />
+            <YAxis 
+              stroke="#9ca3af"
+              tick={{ fill: '#9ca3af', fontSize: 12 }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#374151', 
+                border: '1px solid #6b7280',
+                borderRadius: '8px',
+                color: '#fff'
+              }}
+            />
+            <Legend />
+            <Bar 
+              dataKey="commercial" 
+              fill="#10b981" 
+              name={`Commercial (${getAssetLabel(selectedAsset)})`}
+            />
+            <Bar 
+              dataKey="nonCommercial" 
+              fill="#ef4444" 
+              name={`Non-Commercial (${getAssetLabel(selectedAsset)})`}
+            />
+            {comparisonMode && selectedAsset2 && (
+              <>
+                <Bar 
+                  dataKey="commercial2" 
+                  fill="#06b6d4" 
+                  name={`Commercial (${getAssetLabel(selectedAsset2)})`}
+                />
+                <Bar 
+                  dataKey="nonCommercial2" 
+                  fill="#f97316" 
+                  name={`Non-Commercial (${getAssetLabel(selectedAsset2)})`}
+                />
+              </>
+            )}
+          </BarChart>
+        );
+      
+      case "pie":
+        return (
+          <PieChart>
+            <Pie
+              data={pieData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              outerRadius={120}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {pieData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Pie>
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#374151', 
+                border: '1px solid #6b7280',
+                borderRadius: '8px',
+                color: '#fff'
+              }}
+            />
+          </PieChart>
+        );
+      
+      default:
+        return (
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis 
+              dataKey="date" 
+              stroke="#9ca3af"
+              tick={{ fill: '#9ca3af', fontSize: 12 }}
+            />
+            <YAxis 
+              stroke="#9ca3af"
+              tick={{ fill: '#9ca3af', fontSize: 12 }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#374151', 
+                border: '1px solid #6b7280',
+                borderRadius: '8px',
+                color: '#fff'
+              }}
+            />
+            <Legend />
+            <Line 
+              type="monotone" 
+              dataKey="commercial" 
+              stroke="#10b981" 
+              strokeWidth={3}
+              name={`Commercial (${getAssetLabel(selectedAsset)})`}
+              dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="nonCommercial" 
+              stroke="#ef4444" 
+              strokeWidth={3}
+              name={`Non-Commercial (${getAssetLabel(selectedAsset)})`}
+              dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
+            />
+            {comparisonMode && selectedAsset2 && (
+              <>
+                <Line 
+                  type="monotone" 
+                  dataKey="commercial2" 
+                  stroke="#06b6d4" 
+                  strokeWidth={3}
+                  name={`Commercial (${getAssetLabel(selectedAsset2)})`}
+                  dot={{ fill: '#06b6d4', strokeWidth: 2, r: 4 }}
+                  strokeDasharray="5 5"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="nonCommercial2" 
+                  stroke="#f97316" 
+                  strokeWidth={3}
+                  name={`Non-Commercial (${getAssetLabel(selectedAsset2)})`}
+                  dot={{ fill: '#f97316', strokeWidth: 2, r: 4 }}
+                  strokeDasharray="5 5"
+                />
+              </>
+            )}
+          </LineChart>
+        );
+    }
+  };
 
   if (preview) {
     return (
@@ -118,73 +296,103 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
     <div className="space-y-6">
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4">
             <CardTitle className="text-white">Commitment of Traders (COT) Reports</CardTitle>
-            <Select value={selectedAsset} onValueChange={setSelectedAsset}>
-              <SelectTrigger className="w-64 bg-gray-700 border-gray-600 text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-700 border-gray-600 max-h-80">
-                {Object.entries(groupedAssets).map(([category, categoryAssets]) => (
-                  <div key={category}>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {category}
+            
+            {/* Controls Row */}
+            <div className="flex flex-wrap gap-4 items-center">
+              <Select value={selectedAsset} onValueChange={setSelectedAsset}>
+                <SelectTrigger className="w-64 bg-gray-700 border-gray-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600 max-h-80">
+                  {Object.entries(groupedAssets).map(([category, categoryAssets]) => (
+                    <div key={category}>
+                      <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                        {category}
+                      </div>
+                      {categoryAssets.map((asset) => (
+                        <SelectItem 
+                          key={asset.value} 
+                          value={asset.value} 
+                          className="text-white hover:bg-gray-600 pl-4"
+                        >
+                          {asset.label}
+                        </SelectItem>
+                      ))}
                     </div>
-                    {categoryAssets.map((asset) => (
-                      <SelectItem 
-                        key={asset.value} 
-                        value={asset.value} 
-                        className="text-white hover:bg-gray-600 pl-4"
-                      >
-                        {asset.label}
-                      </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button
+                variant={comparisonMode ? "default" : "outline"}
+                onClick={() => setComparisonMode(!comparisonMode)}
+                className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Compare
+              </Button>
+
+              {comparisonMode && (
+                <Select value={selectedAsset2} onValueChange={setSelectedAsset2}>
+                  <SelectTrigger className="w-64 bg-gray-700 border-gray-600 text-white">
+                    <SelectValue placeholder="Select second asset" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 border-gray-600 max-h-80">
+                    {Object.entries(groupedAssets).map(([category, categoryAssets]) => (
+                      <div key={category}>
+                        <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                          {category}
+                        </div>
+                        {categoryAssets.map((asset) => (
+                          <SelectItem 
+                            key={asset.value} 
+                            value={asset.value} 
+                            className="text-white hover:bg-gray-600 pl-4"
+                          >
+                            {asset.label}
+                          </SelectItem>
+                        ))}
+                      </div>
                     ))}
-                  </div>
-                ))}
-              </SelectContent>
-            </Select>
+                  </SelectContent>
+                </Select>
+              )}
+
+              <div className="flex gap-2">
+                <Button
+                  variant={chartType === "line" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("line")}
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  <LineChartIcon className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={chartType === "bar" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("bar")}
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={chartType === "pie" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("pie")}
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  <PieChartIcon className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="h-96 mb-6">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={cotData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#9ca3af"
-                  tick={{ fill: '#9ca3af', fontSize: 12 }}
-                />
-                <YAxis 
-                  stroke="#9ca3af"
-                  tick={{ fill: '#9ca3af', fontSize: 12 }}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#374151', 
-                    border: '1px solid #6b7280',
-                    borderRadius: '8px',
-                    color: '#fff'
-                  }}
-                />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="commercial" 
-                  stroke="#10b981" 
-                  strokeWidth={3}
-                  name="Commercial Traders"
-                  dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="nonCommercial" 
-                  stroke="#ef4444" 
-                  strokeWidth={3}
-                  name="Non-Commercial Traders"
-                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                />
-              </LineChart>
+              {renderChart()}
             </ResponsiveContainer>
           </div>
           
