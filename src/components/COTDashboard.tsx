@@ -99,16 +99,14 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
         </CardHeader>
         <CardContent>
           <div className="h-96 mb-6">
-            <ResponsiveContainer width="100%" height="100%">
-              <COTCharts
-                chartType={chartType}
-                data={comparisonMode ? combinedData : cotData}
-                comparisonMode={comparisonMode}
-                selectedAsset={selectedAsset}
-                selectedAsset2={selectedAsset2}
-                pieData={pieData}
-              />
-            </ResponsiveContainer>
+            <COTCharts
+              chartType={chartType}
+              data={comparisonMode ? combinedData : cotData}
+              comparisonMode={comparisonMode}
+              selectedAsset={selectedAsset}
+              selectedAsset2={selectedAsset2}
+              pieData={pieData}
+            />
           </div>
           
           <COTSummaryCards />
