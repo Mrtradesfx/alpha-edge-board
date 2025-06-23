@@ -51,9 +51,9 @@ const Index = () => {
             <TabsTrigger value="overview" className="data-[state=active]:bg-gray-700">
               Overview
             </TabsTrigger>
-            <TabsTrigger value="currency" className="data-[state=active]:bg-gray-700">
+            <TabsTrigger value="heatmap" className="data-[state=active]:bg-gray-700">
               <DollarSign className="w-4 h-4 mr-2" />
-              Currency
+              Heat Map
             </TabsTrigger>
             <TabsTrigger value="cot" className="data-[state=active]:bg-gray-700">
               <TrendingUp className="w-4 h-4 mr-2" />
@@ -80,7 +80,7 @@ const Index = () => {
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <DollarSign className="w-5 h-5 text-green-500" />
-                    Currency Strength
+                    Asset Heat Map
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -138,7 +138,7 @@ const Index = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="currency">
+          <TabsContent value="heatmap">
             <CurrencyHeatMap />
           </TabsContent>
 
