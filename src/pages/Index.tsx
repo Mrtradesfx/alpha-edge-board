@@ -7,9 +7,10 @@ import COTDashboard from "@/components/COTDashboard";
 import EconomicCalendar from "@/components/EconomicCalendar";
 import SentimentAnalysis from "@/components/SentimentAnalysis";
 import NewsAggregator from "@/components/NewsAggregator";
+import CurrencyHeatMap from "@/components/CurrencyHeatMap";
 import Navigation from "@/components/Navigation";
 import AuthModal from "@/components/AuthModal";
-import { TrendingUp, Calendar, Activity, Newspaper } from "lucide-react";
+import { TrendingUp, Calendar, Activity, Newspaper, DollarSign } from "lucide-react";
 
 const Index = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -46,9 +47,13 @@ const Index = () => {
 
         {/* Dashboard Content */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-gray-800/50 border border-gray-700">
+          <TabsList className="grid w-full grid-cols-6 bg-gray-800/50 border border-gray-700">
             <TabsTrigger value="overview" className="data-[state=active]:bg-gray-700">
               Overview
+            </TabsTrigger>
+            <TabsTrigger value="currency" className="data-[state=active]:bg-gray-700">
+              <DollarSign className="w-4 h-4 mr-2" />
+              Currency
             </TabsTrigger>
             <TabsTrigger value="cot" className="data-[state=active]:bg-gray-700">
               <TrendingUp className="w-4 h-4 mr-2" />
@@ -71,6 +76,18 @@ const Index = () => {
           <TabsContent value="overview" className="space-y-6">
             {/* Overview Dashboard Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-green-500" />
+                    Currency Strength
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CurrencyHeatMap preview={true} />
+                </CardContent>
+              </Card>
+
               <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
@@ -107,7 +124,7 @@ const Index = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Newspaper className="w-5 h-5 text-orange-500" />
@@ -119,6 +136,10 @@ const Index = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="currency">
+            <CurrencyHeatMap />
           </TabsContent>
 
           <TabsContent value="cot">
