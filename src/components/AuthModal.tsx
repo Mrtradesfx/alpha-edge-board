@@ -69,7 +69,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700 text-white">
         <DialogHeader className="pb-4">
           <DialogTitle className="text-2xl font-bold text-center">
-            Join TraderBoard
+            Join Quantide
           </DialogTitle>
         </DialogHeader>
         
