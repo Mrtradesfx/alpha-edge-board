@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, addMonths, subMonths, startOfWeek, endOfWeek, eachWeekOfInterval, eachDayOfInterval, isSameMonth } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
 import DailyTradeModal from './DailyTradeModal';
 import TradingCalendarHeader from './calendar/TradingCalendarHeader';
 import MonthlyStatsCards from './calendar/MonthlyStatsCards';
@@ -18,6 +18,7 @@ interface DailySummary {
 
 const TradingCalendar = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [dailySummaries, setDailySummaries] = useState<DailySummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,12 +115,12 @@ const TradingCalendar = () => {
   const weeklyStats = getWeeklyStats();
 
   return (
-    <div className="space-y-6 p-6 bg-white dark:bg-gray-900 min-h-screen">
+    <div className="space-y-4 sm:space-y-6 p-3 sm:p-6 bg-white dark:bg-gray-900 min-h-screen">
       <TradingCalendarHeader />
       
       <MonthlyStatsCards stats={monthlyStats} />
 
-      <div className="flex gap-6">
+      <div className={`${isMobile ? 'space-y-4' : 'flex gap-6'}`}>
         <div className="flex-1">
           <CalendarGrid
             currentMonth={currentMonth}
@@ -130,7 +131,13 @@ const TradingCalendar = () => {
           />
         </div>
 
-        <WeeklyStatsSidebar weeklyStats={weeklyStats} />
+        {!isMobile && <WeeklyStatsSidebar weeklyStats={weeklyStats} />}
+        
+        {isMobile && (
+          <div className="mt-4">
+            <WeeklyStatsSidebar weeklyStats={weeklyStats} />
+          </div>
+        )}
       </div>
 
       {showModal && selectedDayData && selectedDate && (

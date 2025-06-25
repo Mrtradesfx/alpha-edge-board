@@ -3,6 +3,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import CalendarDay from './CalendarDay';
 
 interface DailySummary {
@@ -27,6 +28,8 @@ const CalendarGrid = ({
   onNavigateMonth, 
   onDayClick 
 }: CalendarGridProps) => {
+  const isMobile = useIsMobile();
+  
   const getDayData = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     return dailySummaries.find(summary => summary.date === dateStr);
@@ -51,7 +54,7 @@ const CalendarGrid = ({
     <Card>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Button
               variant="ghost"
               size="sm"
@@ -59,8 +62,8 @@ const CalendarGrid = ({
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <h2 className="text-xl font-semibold">
-              {format(currentMonth, 'MMMM yyyy')}
+            <h2 className={cn("font-semibold", isMobile ? "text-lg" : "text-xl")}>
+              {format(currentMonth, isMobile ? 'MMM yyyy' : 'MMMM yyyy')}
             </h2>
             <Button
               variant="ghost"
@@ -70,14 +73,16 @@ const CalendarGrid = ({
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-            <span>Monthly stats:</span>
-            <span className="font-semibold text-green-600">${Math.abs(monthlyStats.totalPnl).toFixed(1)}K</span>
-            <span>{dailySummaries.length} days</span>
-          </div>
+          {!isMobile && (
+            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+              <span>Monthly stats:</span>
+              <span className="font-semibold text-green-600">${Math.abs(monthlyStats.totalPnl).toFixed(1)}K</span>
+              <span>{dailySummaries.length} days</span>
+            </div>
+          )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-3 sm:p-6">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="text-gray-500">Loading calendar...</div>
@@ -87,8 +92,11 @@ const CalendarGrid = ({
             {/* Calendar headers */}
             <div className="grid grid-cols-7 gap-0 mb-2">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="p-3 text-sm font-medium text-gray-500 text-center border-b border-gray-200 dark:border-gray-700">
-                  {day}
+                <div key={day} className={cn(
+                  "text-center font-medium text-gray-500 border-b border-gray-200 dark:border-gray-700",
+                  isMobile ? "p-2 text-xs" : "p-3 text-sm"
+                )}>
+                  {isMobile ? day.substring(0, 1) : day}
                 </div>
               ))}
             </div>
