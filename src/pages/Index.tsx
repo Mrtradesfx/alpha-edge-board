@@ -1,4 +1,5 @@
 
+
 import { useState } from "react";
 import ModernSidebar from "@/components/ModernSidebar";
 import ModernHeader from "@/components/ModernHeader";
@@ -40,13 +41,32 @@ const Index = () => {
           <div className="space-y-6">
             <TradingViewBanner />
             
-            <NewsGlobe />
-            
-            <TradingViewChart />
-            
+            {/* Desktop 4-card grid layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <NewsAggregator preview={true} />
-              <EconomicCalendar />
+              {/* Top Left - Globe */}
+              <div className="lg:order-1">
+                <NewsGlobe />
+              </div>
+              
+              {/* Top Right - Chart */}
+              <div className="lg:order-2">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Live Market Chart
+                  </h3>
+                  <TradingViewChart height={400} />
+                </div>
+              </div>
+              
+              {/* Bottom Left - News */}
+              <div className="lg:order-3">
+                <NewsAggregator preview={true} />
+              </div>
+              
+              {/* Bottom Right - Economic Calendar */}
+              <div className="lg:order-4">
+                <EconomicCalendar />
+              </div>
             </div>
           </div>
         );
@@ -141,3 +161,4 @@ const Index = () => {
 };
 
 export default Index;
+
