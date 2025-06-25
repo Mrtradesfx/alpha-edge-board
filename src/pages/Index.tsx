@@ -13,6 +13,7 @@ import NewsGlobe from "@/components/NewsGlobe";
 import AINewsAnalyzer from "@/components/AINewsAnalyzer";
 import AITradeCoach from "@/components/AITradeCoach";
 import SmartAlerts from "@/components/SmartAlerts";
+import TradingViewBanner from "@/components/TradingViewBanner";
 import { TrendingUp, Activity, Newspaper, DollarSign, Target, Users, BarChart3 } from "lucide-react";
 
 const Index = () => {
@@ -147,6 +148,7 @@ const Index = () => {
       
       <div className="flex-1 flex flex-col lg:ml-0">
         <ModernHeader sidebarCollapsed={sidebarCollapsed} />
+        <TradingViewBanner />
         
         <main className="flex-1 p-2 sm:p-3 lg:p-4 xl:p-6">
           {renderContent()}
