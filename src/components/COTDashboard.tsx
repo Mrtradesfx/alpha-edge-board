@@ -200,7 +200,10 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
             )}
           </div>
           
-          <COTSummaryCards />
+          <COTSummaryCards 
+            data={comparisonMode ? combinedData : cotData}
+            selectedAsset={selectedAsset}
+          />
         </CardContent>
       </Card>
     </div>
