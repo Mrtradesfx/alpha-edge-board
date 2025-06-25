@@ -1,7 +1,9 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, TrendingDown, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { assets } from "@/data/assets";
+import { useRealTimeAssetData } from "@/hooks/useRealTimeData";
 
 interface AssetStrength {
   asset: string;
@@ -16,12 +18,14 @@ interface CurrencyHeatMapProps {
 }
 
 const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
-  // Generate mock data for all assets
-  const assetData: AssetStrength[] = assets.map(asset => ({
+  const { data: liveData, isLoading, isConnected, error, refetch } = useRealTimeAssetData();
+  
+  // Fallback to mock data if live data is not available
+  const assetData: AssetStrength[] = liveData?.length > 0 ? liveData : assets.map(asset => ({
     asset: asset.value,
     name: asset.label,
     strength: Math.floor(Math.random() * 100),
-    change: (Math.random() - 0.5) * 6, // Range from -3 to +3
+    change: (Math.random() - 0.5) * 6,
     category: asset.category
   }));
 
@@ -61,8 +65,15 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
             </div>
           ))}
         </div>
-        <div className="text-xs text-gray-400 text-center">
-          Asset Strength Index
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-gray-400">Asset Strength Index</span>
+          <div className="flex items-center gap-1">
+            {isConnected ? (
+              <Wifi className="w-3 h-3 text-green-400" />
+            ) : (
+              <WifiOff className="w-3 h-3 text-red-400" />
+            )}
+          </div>
         </div>
       </div>
     );
@@ -71,12 +82,37 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   return (
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-green-500" />
-          Heat Map
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-green-500" />
+            <CardTitle className="text-white">Heat Map</CardTitle>
+            <Badge variant={isConnected ? "default" : "destructive"} className="text-xs">
+              {isConnected ? (
+                <>
+                  <Wifi className="w-3 h-3 mr-1" />
+                  Live
+                </>
+              ) : (
+                <>
+                  <WifiOff className="w-3 h-3 mr-1" />
+                  Offline
+                </>
+              )}
+            </Badge>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refetch}
+            disabled={isLoading}
+            className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
         <p className="text-sm text-gray-400">
           Real-time relative strength of all tradeable assets
+          {error && <span className="text-red-400 block">Error: {error}</span>}
         </p>
       </CardHeader>
       <CardContent>
