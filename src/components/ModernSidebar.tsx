@@ -60,25 +60,25 @@ const ModernSidebar = ({ activeTab, onTabChange, onToggle, isOpen: propIsOpen }:
 
   return (
     <>
-      {/* Mobile overlay - below header but above content */}
+      {/* Mobile overlay - covers entire screen including header */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 lg:hidden z-30"
-          style={{ top: '64px' }}
+          className="fixed inset-0 bg-black/50 lg:hidden z-40"
           onClick={() => handleToggle(false)}
         />
       )}
 
-      {/* Sidebar - below header */}
+      {/* Sidebar - covers full height on mobile */}
       <div className={cn(
-        "fixed left-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 z-30",
+        "fixed left-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 z-50",
         "lg:translate-x-0 lg:static lg:h-screen lg:w-64",
         "lg:top-0",
-        isOpen ? "translate-x-0 w-64 top-16 h-[calc(100vh-64px)]" : "-translate-x-full w-0 lg:w-16 top-16 h-[calc(100vh-64px)]"
+        isOpen ? "translate-x-0 w-64 top-0 h-screen" : "-translate-x-full w-0 lg:w-16 top-16 h-[calc(100vh-64px)]"
       )}>
-        {/* Header - only show close button on mobile when open */}
+        {/* Header - show on mobile when open */}
         {isOpen && (
-          <div className="flex items-center justify-end p-3 border-b border-gray-200 dark:border-gray-800 h-16 lg:hidden">
+          <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-800 h-16 lg:hidden">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Menu</h2>
             <Button
               variant="ghost"
               size="sm"
