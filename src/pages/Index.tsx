@@ -152,23 +152,24 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navigation
         isAuthenticated={!!user}
         onAuthClick={() => setShowAuthModal(true)}
         onLogout={handleLogout}
       />
       
-      <div className="flex w-full">
+      <div className="flex">
         <ModernSidebar
           activeTab={activeSection}
           onTabChange={setActiveSection}
         />
         
-        <div className="flex-1 w-full">
+        {/* Main content area with proper responsive margins */}
+        <div className="flex-1 lg:ml-0">
           <ModernHeader sidebarCollapsed={false} />
           
-          <main className="p-4 sm:p-6 max-w-7xl mx-auto w-full">
+          <main className="p-4 sm:p-6 max-w-7xl mx-auto">
             {renderContent()}
           </main>
         </div>
