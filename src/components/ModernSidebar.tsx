@@ -66,26 +66,19 @@ const ModernSidebar = ({ activeTab, onTabChange, onToggle }: ModernSidebarProps)
         "lg:top-0",
         isOpen ? "translate-x-0 w-64 top-16 h-[calc(100vh-64px)]" : "-translate-x-full w-0 lg:w-16 top-16 h-[calc(100vh-64px)]"
       )}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-800 h-16">
-          {(!isOpen && "lg:block") || isOpen ? (
-            <div className="flex items-center gap-2">
-              <div className="text-lg font-bold text-gray-900 dark:text-white">Quantide</div>
-              <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs">
-                Live
-              </Badge>
-            </div>
-          ) : null}
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleToggle(!isOpen)}
-            className="p-1.5 lg:hidden"
-          >
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
+        {/* Header - only show close button on mobile when open */}
+        {isOpen && (
+          <div className="flex items-center justify-end p-3 border-b border-gray-200 dark:border-gray-800 h-16 lg:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleToggle(false)}
+              className="p-1.5"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="p-3 space-y-1 overflow-y-auto">
