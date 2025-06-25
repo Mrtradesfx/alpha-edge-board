@@ -61,11 +61,45 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
     };
   };
 
+  // Map asset values to price data keys
+  const getPriceDataKey = (assetValue: string): string => {
+    // Map asset values to the actual keys in priceData
+    const mapping: Record<string, string> = {
+      'EUR': 'EUR/USD',
+      'GBP': 'GBP/USD', 
+      'JPY': 'USD/JPY',
+      'CHF': 'USD/CHF',
+      'CAD': 'USD/CAD',
+      'AUD': 'AUD/USD',
+      'NZD': 'NZD/USD',
+      'EURGBP': 'EUR/GBP',
+      'EURJPY': 'EUR/JPY',
+      'GBPJPY': 'GBP/JPY',
+      'BTC': 'BTC',
+      'ETH': 'ETH',
+      'GOLD': 'GOLD',
+      'SILVER': 'SILVER',
+      'OIL': 'OIL',
+      'COPPER': 'COPPER',
+      'US30': 'US30',
+      'NASDAQ': 'NAS100',
+      'SP500': 'SPX500',
+      'DAX': 'GER40',
+      'FTSE': 'UK100',
+      'NIKKEI': 'JPN225',
+      'ASX': 'AUS200'
+    };
+    
+    return mapping[assetValue] || assetValue;
+  };
+
   // Combine asset data with price data and timeframe data
   const assetData: AssetStrength[] = liveData?.length > 0 ? liveData : assets.map(asset => {
-    const priceInfo = priceData[asset.value];
+    const priceKey = getPriceDataKey(asset.value);
+    const priceInfo = priceData[priceKey];
+    
     return {
-      asset: asset.value,
+      asset: asset.label, // Use the label (e.g., "EUR/USD") for display
       name: asset.label,
       strength: Math.floor(Math.random() * 100),
       change: (Math.random() - 0.5) * 6,
@@ -253,6 +287,9 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
                               </div>
                             )}
                           </>
+                        )}
+                        {!asset.price && (
+                          <span className="text-gray-500 text-xs">No Data</span>
                         )}
                       </div>
                     </td>
