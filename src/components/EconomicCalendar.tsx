@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Globe, RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
+import { Clock, Globe, RefreshCw, AlertCircle, ExternalLink, Brain, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useEconomicCalendar } from "@/hooks/useEconomicCalendar";
 
@@ -13,6 +13,9 @@ interface EconomicCalendarProps {
 const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [selectedImpact, setSelectedImpact] = useState("all");
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const { data: events = [], isLoading, error, refetch } = useEconomicCalendar([
     'United States', 
@@ -56,6 +59,54 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
   });
 
   const displayEvents = preview ? filteredEvents.slice(0, 3) : filteredEvents;
+
+  const analyzeWithAI = async () => {
+    if (filteredEvents.length === 0) {
+      setAnalysisError("No events to analyze");
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+    setAiAnalysis(null);
+
+    try {
+      const prompt = `
+Here is a list of upcoming forex news events:
+
+${JSON.stringify(filteredEvents, null, 2)}
+
+Analyze these events and provide insights on:
+1. Which events are likely to have significant market impact
+2. How they might affect major currency pairs (EUR/USD, GBP/USD, USD/JPY, etc.)
+3. Potential impact on commodities (Gold, Oil) and crypto markets
+4. Any correlations between events
+5. Risk assessment and trading considerations
+
+Provide a concise but comprehensive analysis with reasoning.
+`;
+
+      const response = await fetch('/api/ai-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI analysis failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setAiAnalysis(data.analysis || 'No analysis generated');
+    } catch (error) {
+      console.error('AI Analysis Error:', error);
+      setAnalysisError(error instanceof Error ? error.message : 'Failed to analyze events');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   // Error state component
   const ErrorState = ({ isPreview = false }: { isPreview?: boolean }) => (
@@ -187,6 +238,21 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
                     <SelectItem value="low" className="text-white">Low</SelectItem>
                   </SelectContent>
                 </Select>
+
+                {displayEvents.length > 0 && (
+                  <button
+                    onClick={analyzeWithAI}
+                    disabled={isAnalyzing}
+                    className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                  >
+                    {isAnalyzing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Brain className="w-4 h-4" />
+                    )}
+                    {isAnalyzing ? 'Analyzing...' : 'AI Analysis'}
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -269,6 +335,30 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
           )}
         </CardContent>
       </Card>
+
+      {/* AI Analysis Results */}
+      {(aiAnalysis || analysisError) && (
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Brain className="w-5 h-5" />
+              AI Market Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analysisError ? (
+              <div className="text-red-400 text-sm">
+                <AlertCircle className="w-4 h-4 inline mr-2" />
+                {analysisError}
+              </div>
+            ) : (
+              <div className="text-gray-300 text-sm whitespace-pre-wrap">
+                {aiAnalysis}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
