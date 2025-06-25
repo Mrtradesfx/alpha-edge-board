@@ -13,7 +13,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [selectedImpact, setSelectedImpact] = useState("all");
 
-  // Mock economic events data
+  // Enhanced mock economic events data
   const events = [
     {
       id: 1,
@@ -54,6 +54,26 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
       forecast: "51.2",
       previous: "50.8",
       actual: null
+    },
+    {
+      id: 5,
+      time: "09:45",
+      country: "EUR",
+      event: "Inflation Rate YoY",
+      impact: "high",
+      forecast: "2.4%",
+      previous: "2.6%",
+      actual: "2.4%"
+    },
+    {
+      id: 6,
+      time: "15:00",
+      country: "USD",
+      event: "Fed Chair Speech",
+      impact: "high",
+      forecast: "-",
+      previous: "-",
+      actual: null
     }
   ];
 
@@ -81,25 +101,48 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
     return flags[currency] || "🌍";
   };
 
+  const filteredEvents = events.filter(event => {
+    const countryMatch = selectedCountry === "all" || event.country === selectedCountry;
+    const impactMatch = selectedImpact === "all" || event.impact === selectedImpact;
+    return countryMatch && impactMatch;
+  });
+
+  const displayEvents = preview ? filteredEvents.slice(0, 3) : filteredEvents;
+
   if (preview) {
     return (
-      <div className="space-y-3">
-        {events.slice(0, 3).map((event) => (
-          <div key={event.id} className="flex items-center justify-between p-2 rounded-lg bg-gray-700/30">
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-400">{event.time}</span>
-              <span className="text-lg">{getCurrencyFlag(event.country)}</span>
-              <span className="text-sm text-white truncate">{event.event}</span>
-            </div>
-            <Badge variant="outline" className={getImpactColor(event.impact)}>
-              {event.impact}
-            </Badge>
+      <Card className="bg-gray-800/50 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <Clock className="w-5 h-5" />
+            Economic Calendar
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {displayEvents.map((event) => (
+              <div key={event.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-700/30 hover:bg-gray-700/50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-400 font-mono min-w-[3rem]">{event.time}</span>
+                  <span className="text-lg">{getCurrencyFlag(event.country)}</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-white font-medium">{event.event}</span>
+                    <span className="text-xs text-gray-400">{event.country}</span>
+                  </div>
+                </div>
+                <Badge variant="outline" className={`${getImpactColor(event.impact)} text-xs`}>
+                  {event.impact.toUpperCase()}
+                </Badge>
+              </div>
+            ))}
+            {filteredEvents.length > 3 && (
+              <div className="text-xs text-gray-400 text-center pt-2 border-t border-gray-600">
+                {filteredEvents.length - 3} more events today
+              </div>
+            )}
           </div>
-        ))}
-        <div className="text-xs text-gray-400 text-center">
-          {events.length - 3} more events today
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -142,7 +185,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {events.map((event) => (
+            {displayEvents.map((event) => (
               <Card key={event.id} className="bg-gray-700/30 border-gray-600 hover:bg-gray-700/50 transition-colors">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3">
@@ -182,6 +225,13 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
                 </CardContent>
               </Card>
             ))}
+            
+            {displayEvents.length === 0 && (
+              <div className="text-center py-8">
+                <div className="text-gray-400 mb-2">No events match your filters</div>
+                <div className="text-sm text-gray-500">Try adjusting your country or impact level filters</div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
