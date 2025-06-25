@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 interface ModernSidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  onToggle?: (isOpen: boolean) => void;
 }
 
 const sidebarItems = [
@@ -39,29 +40,22 @@ const sidebarItems = [
   { id: "ai-coach", label: "AI Trade Coach", icon: Brain },
 ];
 
-const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
+const ModernSidebar = ({ activeTab, onTabChange, onToggle }: ModernSidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = (newState: boolean) => {
+    setIsOpen(newState);
+    onToggle?.(newState);
+  };
 
   return (
     <>
-      {/* Mobile Menu Button - Fixed position below header */}
-      <div className="lg:hidden fixed top-20 left-4 z-30">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsOpen(!isOpen)}
-          className="bg-white/90 backdrop-blur-sm border-gray-200 shadow-lg"
-        >
-          <Menu className="w-4 h-4" />
-        </Button>
-      </div>
-
       {/* Mobile overlay - below header but above content */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/50 lg:hidden z-30"
           style={{ top: '64px' }}
-          onClick={() => setIsOpen(false)}
+          onClick={() => handleToggle(false)}
         />
       )}
 
@@ -86,7 +80,7 @@ const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => handleToggle(!isOpen)}
             className="p-1.5 lg:hidden"
           >
             <X className="w-4 h-4" />
@@ -100,7 +94,7 @@ const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
               key={item.id}
               onClick={() => {
                 onTabChange(item.id);
-                setIsOpen(false); // Close mobile menu after selection
+                handleToggle(false); // Close mobile menu after selection
               }}
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",

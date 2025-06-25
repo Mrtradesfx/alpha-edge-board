@@ -1,20 +1,33 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Search, Settings, User, Moon, Sun } from "lucide-react";
+import { Bell, Search, Settings, User, Moon, Sun, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/ThemeContext";
 
 interface ModernHeaderProps {
   sidebarCollapsed: boolean;
+  onMenuClick?: () => void;
 }
 
-const ModernHeader = ({ sidebarCollapsed }: ModernHeaderProps) => {
+const ModernHeader = ({ sidebarCollapsed, onMenuClick }: ModernHeaderProps) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
       <div className="flex items-center justify-center px-3 sm:px-6 py-3 min-h-[64px] relative">
+        {/* Left section - Menu button (mobile only) */}
+        <div className="absolute left-3 sm:left-6 flex items-center lg:hidden">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onMenuClick}
+            className="p-2"
+          >
+            <Menu className="w-4 h-4" />
+          </Button>
+        </div>
+
         {/* Centered content */}
         <div className="flex flex-col items-center justify-center text-center">
           <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white">

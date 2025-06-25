@@ -22,6 +22,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 const Index = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -32,6 +33,10 @@ const Index = () => {
 
   const handleLogout = () => {
     // Additional logout logic if needed
+  };
+
+  const handleMenuClick = () => {
+    setSidebarOpen(!sidebarOpen);
   };
 
   const renderContent = () => {
@@ -144,11 +149,15 @@ const Index = () => {
         <ModernSidebar
           activeTab={activeSection}
           onTabChange={setActiveSection}
+          onToggle={setSidebarOpen}
         />
         
         {/* Main content area with proper responsive margins */}
         <div className="flex-1 lg:ml-0">
-          <ModernHeader sidebarCollapsed={false} />
+          <ModernHeader 
+            sidebarCollapsed={false} 
+            onMenuClick={handleMenuClick}
+          />
           
           <main className="p-4 sm:p-6 max-w-7xl mx-auto">
             {renderContent()}
