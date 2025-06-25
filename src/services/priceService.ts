@@ -1,6 +1,6 @@
 
 // Alpha Vantage API service for real-time financial data
-const API_KEY = 'demo'; // Replace with your actual Alpha Vantage API key
+const API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY || 'demo';
 const BASE_URL = 'https://www.alphavantage.co/query';
 
 export interface RealPriceData {
@@ -96,6 +96,10 @@ const fetchStockData = async (symbol: string) => {
 export const fetchRealPrices = async (): Promise<Record<string, { price: number; change24h: number }>> => {
   try {
     console.log('Fetching real price data from Alpha Vantage...');
+    
+    if (API_KEY === 'demo') {
+      console.warn('Using demo API key. Please set VITE_ALPHA_VANTAGE_API_KEY for real data.');
+    }
     
     const priceData: Record<string, { price: number; change24h: number }> = {};
     
