@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ const Index = () => {
         {/* Header Section */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
-            TraderBoard
+            Quantide
           </h1>
           <p className="text-xl text-gray-300 mb-6">
             Real-time trading data, simplified.

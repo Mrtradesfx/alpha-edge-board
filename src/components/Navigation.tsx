@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { User, Settings, LogOut } from "lucide-react";
@@ -14,7 +13,7 @@ const Navigation = ({ isAuthenticated, onAuthClick, onLogout }: NavigationProps)
     <nav className="border-b border-gray-700 bg-gray-900/90 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className="text-2xl font-bold text-white">TraderBoard</div>
+          <div className="text-2xl font-bold text-white">Quantide</div>
           <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
             Live
           </Badge>
