@@ -69,7 +69,7 @@ const TradingViewChart = ({
           save_image: saveImage,
           hide_side_toolbar: hideSideToolbar,
           hide_legend: false,
-          hide_volume: true,
+          hide_volume: false,
           studies: [],
           show_popup_button: showPopupButton,
           popup_width: "1000",
@@ -77,7 +77,9 @@ const TradingViewChart = ({
           details: false,
           hotlist: false,
           calendar: false,
-          news: []
+          news: [],
+          disabled_features: hideSideToolbar ? ["left_toolbar"] : [],
+          enabled_features: ["study_templates"]
         });
       }
     };
@@ -92,12 +94,15 @@ const TradingViewChart = ({
   }, [symbol, colorTheme, width, height, interval, hideSideToolbar, allowSymbolChange, saveImage, hideDateRanges, hideMarketStatus, hideSymbolSearch, showPopupButton, locale, utcOffset, autosize]);
 
   return (
-    <div className="w-full" style={{ height: typeof height === 'number' ? `${height}px` : height }}>
+    <div className="w-full h-full">
       <div 
         ref={containerRef}
         id={`tradingview_chart_${Math.random().toString(36).substr(2, 9)}`}
         className="w-full h-full"
-        style={{ height: typeof height === 'number' ? `${height}px` : height }}
+        style={{ 
+          minHeight: autosize ? '300px' : (typeof height === 'number' ? `${height}px` : height),
+          height: autosize ? '100%' : (typeof height === 'number' ? `${height}px` : height)
+        }}
       />
     </div>
   );
