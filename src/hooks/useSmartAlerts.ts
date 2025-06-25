@@ -30,9 +30,15 @@ export const useSmartAlerts = () => {
     if (!isMonitoring || alerts.length === 0) return;
 
     const interval = setInterval(() => {
+      // Transform priceData to the expected format (symbol -> price number)
+      const simplePriceData: { [symbol: string]: number } = {};
+      Object.entries(priceData).forEach(([symbol, data]) => {
+        simplePriceData[symbol] = data.price;
+      });
+
       const newTriggeredAlerts = checkTriggeredAlerts(
         alerts,
-        priceData,
+        simplePriceData,
         sentimentData
       );
 
