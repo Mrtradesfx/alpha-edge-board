@@ -64,7 +64,12 @@ export const useSecureAlerts = () => {
           variant: "destructive",
         });
       } else {
-        setAlerts(data || []);
+        // Cast the data to ensure proper typing
+        const typedAlerts = (data || []).map(alert => ({
+          ...alert,
+          direction: alert.direction as 'above' | 'below'
+        }));
+        setAlerts(typedAlerts);
       }
     } catch (err) {
       console.error('Error loading alerts:', err);
@@ -165,12 +170,16 @@ export const useSecureAlerts = () => {
         return null;
       }
 
-      setAlerts(prev => [data, ...prev]);
+      const typedAlert = {
+        ...data,
+        direction: data.direction as 'above' | 'below'
+      };
+      setAlerts(prev => [typedAlert, ...prev]);
       toast({
         title: "Alert created",
         description: `Alert for ${alertData.symbol} at ${alertData.alert_price}`,
       });
-      return data;
+      return typedAlert;
     } catch (err) {
       console.error('Error creating alert:', err);
       toast({

@@ -35,35 +35,39 @@ const Index = () => {
     // Additional logout logic if needed
   };
 
-  // Mock stats data
+  // Mock stats data with iconColor added
   const statsData = [
     {
       title: "Portfolio Value",
       value: "$124,563",
       change: "+12.5%",
-      trend: "up" as const,
+      changeType: "positive" as const,
       icon: DollarSign,
+      iconColor: "bg-green-500",
     },
     {
       title: "Active Alerts",
       value: "8",
       change: "+2",
-      trend: "up" as const,
+      changeType: "positive" as const,
       icon: Bell,
+      iconColor: "bg-blue-500",
     },
     {
       title: "Win Rate",
       value: "67.3%",
       change: "+5.1%",
-      trend: "up" as const,
+      changeType: "positive" as const,
       icon: TrendingUp,
+      iconColor: "bg-purple-500",
     },
     {
       title: "Risk Score",
       value: "Medium",
       change: "Stable",
-      trend: "neutral" as const,
+      changeType: "neutral" as const,
       icon: BarChart3,
+      iconColor: "bg-orange-500",
     },
   ];
 
@@ -86,7 +90,7 @@ const Index = () => {
             <TradingViewBanner />
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <NewsAggregator isPreviewMode={true} />
+              <NewsAggregator preview={true} />
               <EconomicCalendar />
             </div>
           </div>
@@ -99,7 +103,7 @@ const Index = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <NewsAggregator isPreviewMode={false} />
+              <NewsAggregator preview={false} />
               <AINewsAnalyzer />
             </div>
             <NewsGlobe />
@@ -158,8 +162,6 @@ const Index = () => {
       
       <div className="flex">
         <ModernSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
