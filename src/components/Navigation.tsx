@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { User, Settings, LogOut, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface NavigationProps {
   isAuthenticated: boolean;
@@ -12,10 +13,19 @@ interface NavigationProps {
 
 const Navigation = ({ isAuthenticated, onAuthClick, onLogout }: NavigationProps) => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await signOut();
     onLogout();
+  };
+
+  const handleSettingsClick = () => {
+    navigate('/settings');
+  };
+
+  const handleProfileClick = () => {
+    navigate('/settings');
   };
 
   return (
@@ -35,11 +45,21 @@ const Navigation = ({ isAuthenticated, onAuthClick, onLogout }: NavigationProps)
               <div className="text-sm text-gray-300">
                 Welcome, {user.email?.split('@')[0]}
               </div>
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-gray-300 hover:text-white"
+                onClick={handleSettingsClick}
+              >
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-gray-300 hover:text-white"
+                onClick={handleProfileClick}
+              >
                 <User className="w-4 h-4 mr-2" />
                 Profile
               </Button>
