@@ -39,15 +39,19 @@ export const useRealTimeAssetData = () => {
       });
 
       if (response.error) {
-        throw new Error(response.error.message);
+        console.log('Supabase function error, using fallback data:', response.error.message);
+        setIsConnected(false);
+        setData([]);
+        return;
       }
 
-      setData(response.data);
+      setData(response.data || []);
       setIsConnected(true);
     } catch (err) {
-      console.error('Error fetching asset data:', err);
+      console.log('Error fetching asset data, using fallback:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
       setIsConnected(false);
+      setData([]);
     } finally {
       setIsLoading(false);
     }
@@ -81,15 +85,19 @@ export const useRealTimeSentimentData = () => {
       });
 
       if (response.error) {
-        throw new Error(response.error.message);
+        console.log('Supabase function error, using fallback data:', response.error.message);
+        setIsConnected(false);
+        setData(null);
+        return;
       }
 
-      setData(response.data);
+      setData(response.data || null);
       setIsConnected(true);
     } catch (err) {
-      console.error('Error fetching sentiment data:', err);
+      console.log('Error fetching sentiment data, using fallback:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
       setIsConnected(false);
+      setData(null);
     } finally {
       setIsLoading(false);
     }
