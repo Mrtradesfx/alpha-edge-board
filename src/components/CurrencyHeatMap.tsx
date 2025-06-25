@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, RefreshCw, Wifi, WifiOff, Globe } from "lucide-react";
 import { assets } from "@/data/assets";
 import { useRealTimeAssetData } from "@/hooks/useRealTimeData";
@@ -22,7 +23,7 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
     const priceInfo = priceKey ? priceData[priceKey] : null;
     
     return {
-      asset: asset.label, // Use the label (e.g., "EUR/USD") for display
+      asset: asset.label,
       name: asset.label,
       strength: Math.floor(Math.random() * 100),
       change: (Math.random() - 0.5) * 6,
@@ -33,9 +34,54 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
     };
   });
 
+  // Filter assets by category
+  const forexAssets = assetData.filter(asset => 
+    asset.category === "Major Currencies" || asset.category === "Cross Currencies" || asset.category === "Exotic Currencies"
+  );
+  
+  const commodityAssets = assetData.filter(asset => asset.category === "Commodities");
+  
+  const indexAssets = assetData.filter(asset => 
+    asset.category === "Indices" || asset.category === "Cryptocurrencies"
+  );
+
   if (preview) {
     return <HeatMapPreview assetData={assetData} isConnected={isConnected} isRealData={isRealData} />;
   }
+
+  const renderMatrixContent = (filteredAssets: AssetStrength[], categoryName: string) => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-gray-400">
+          {categoryName} performance across multiple timeframes
+          {isRealData && <span className="text-blue-400 block">✓ Using real market data from Yahoo Finance</span>}
+          {error && <span className="text-red-400 block">Error: {error}</span>}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refetchPrices}
+            disabled={pricesLoading}
+            className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
+          >
+            <RefreshCw className={`w-4 h-4 ${pricesLoading ? 'animate-spin' : ''}`} />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refetch}
+            disabled={isLoading}
+            className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
+      </div>
+      <PerformanceMatrix assetData={filteredAssets} />
+      <HeatMapLegend assetData={filteredAssets} />
+    </div>
+  );
 
   return (
     <Card className="bg-gray-800/50 border-gray-700">
@@ -63,38 +109,43 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
               )}
             </Badge>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={refetchPrices}
-              disabled={pricesLoading}
-              className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
-            >
-              <RefreshCw className={`w-4 h-4 ${pricesLoading ? 'animate-spin' : ''}`} />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={refetch}
-              disabled={isLoading}
-              className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
         </div>
-        <p className="text-sm text-gray-400">
-          Performance across multiple timeframes for all tradeable assets
-          {isRealData && <span className="text-blue-400 block">✓ Using real market data from Yahoo Finance</span>}
-          {error && <span className="text-red-400 block">Error: {error}</span>}
-        </p>
       </CardHeader>
       <CardContent>
-        <div className="space-y-6">
-          <PerformanceMatrix assetData={assetData} />
-          <HeatMapLegend assetData={assetData} />
-        </div>
+        <Tabs defaultValue="forex" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-700/50 mb-6">
+            <TabsTrigger 
+              value="forex" 
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300"
+            >
+              Forex ({forexAssets.length})
+            </TabsTrigger>
+            <TabsTrigger 
+              value="commodities" 
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300"
+            >
+              Commodities ({commodityAssets.length})
+            </TabsTrigger>
+            <TabsTrigger 
+              value="indices" 
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300"
+            >
+              Indices ({indexAssets.length})
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="forex" className="mt-0">
+            {renderMatrixContent(forexAssets, "Forex")}
+          </TabsContent>
+          
+          <TabsContent value="commodities" className="mt-0">
+            {renderMatrixContent(commodityAssets, "Commodities")}
+          </TabsContent>
+          
+          <TabsContent value="indices" className="mt-0">
+            {renderMatrixContent(indexAssets, "Indices & Crypto")}
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
