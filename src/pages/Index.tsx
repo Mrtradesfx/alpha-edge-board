@@ -17,12 +17,14 @@ import CurrencyHeatMap from "@/components/CurrencyHeatMap";
 import NewsGlobe from "@/components/NewsGlobe";
 import { TrendingUp, DollarSign, BarChart3, Bell, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const { user } = useAuth();
+  const { theme } = useTheme();
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
@@ -129,6 +131,13 @@ const Index = () => {
         isAuthenticated={!!user}
         onAuthClick={() => setShowAuthModal(true)}
         onLogout={handleLogout}
+      />
+      
+      {/* TradingView Banner at the top */}
+      <TradingViewBanner 
+        colorTheme={theme}
+        isTransparent={false}
+        displayMode="adaptive"
       />
       
       <div className="flex">
