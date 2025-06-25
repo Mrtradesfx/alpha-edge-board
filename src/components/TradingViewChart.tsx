@@ -67,12 +67,13 @@ const TradingViewChart = ({
           theme: chartTheme,
           style: "1",
           locale: locale,
-          toolbar_bg: chartTheme === 'dark' ? "#1f2937" : "#f1f3f6",
+          toolbar_bg: "transparent",
           enable_publishing: false,
           withdateranges: !hideDateRanges,
           allow_symbol_change: allowSymbolChange,
           save_image: saveImage,
           hide_side_toolbar: hideSideToolbar,
+          hide_top_toolbar: true,
           hide_legend: false,
           hide_volume: false,
           studies: [],
@@ -83,7 +84,7 @@ const TradingViewChart = ({
           hotlist: false,
           calendar: false,
           news: [],
-          disabled_features: hideSideToolbar ? ["left_toolbar"] : [],
+          disabled_features: hideSideToolbar ? ["left_toolbar", "header_widget", "timeframes_toolbar"] : ["header_widget", "timeframes_toolbar"],
           enabled_features: ["study_templates"]
         });
       }
