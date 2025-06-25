@@ -14,7 +14,8 @@ import AINewsAnalyzer from "@/components/AINewsAnalyzer";
 import AITradeCoach from "@/components/AITradeCoach";
 import SmartAlerts from "@/components/SmartAlerts";
 import TradingViewBanner from "@/components/TradingViewBanner";
-import { TrendingUp, Activity, Newspaper, DollarSign, Target, Users, BarChart3 } from "lucide-react";
+import TradingViewChart from "@/components/TradingViewChart";
+import { TrendingUp, Activity, Newspaper, DollarSign, Target, Users, BarChart3, LineChart } from "lucide-react";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -90,15 +91,24 @@ const Index = () => {
               {/* Replace Economic Calendar with NewsGlobe */}
               <NewsGlobe />
 
+              {/* Replace Market Sentiment with TradingView Chart */}
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                 <CardHeader className="pb-2 sm:pb-3">
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
-                    <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
-                    Market Sentiment
+                    <LineChart className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+                    Price Chart
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
-                  <SentimentAnalysis preview={true} />
+                  <TradingViewChart 
+                    symbol="FX:EURUSD"
+                    colorTheme="light"
+                    height={300}
+                    hideSideToolbar={true}
+                    allowSymbolChange={false}
+                    hideDateRanges={true}
+                    showPopupButton={false}
+                  />
                 </CardContent>
               </Card>
 
