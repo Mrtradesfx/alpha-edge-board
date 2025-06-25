@@ -34,59 +34,19 @@ const Index = () => {
     // Additional logout logic if needed
   };
 
-  // Mock stats data
-  const statsData = [
-    {
-      title: "Portfolio Value",
-      value: "$124,563",
-      change: "+12.5%",
-      changeType: "positive" as const,
-      icon: DollarSign,
-      iconColor: "bg-green-500",
-    },
-    {
-      title: "Active Alerts",
-      value: "8",
-      change: "+2",
-      changeType: "positive" as const,
-      icon: Bell,
-      iconColor: "bg-blue-500",
-    },
-    {
-      title: "Win Rate",
-      value: "67.3%",
-      change: "+5.1%",
-      changeType: "positive" as const,
-      icon: TrendingUp,
-      iconColor: "bg-purple-500",
-    },
-    {
-      title: "Risk Score",
-      value: "Medium",
-      change: "Stable",
-      changeType: "neutral" as const,
-      icon: BarChart3,
-      iconColor: "bg-orange-500",
-    },
-  ];
-
   const renderContent = () => {
     switch (activeSection) {
       case "overview":
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {statsData.map((stat, index) => (
-                <ModernStatsCard key={index} {...stat} />
-              ))}
-            </div>
+            <TradingViewBanner />
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TradingViewChart />
               <SentimentAnalysis />
             </div>
-
-            <TradingViewBanner />
+            
+            <NewsGlobe />
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <NewsAggregator preview={true} />
