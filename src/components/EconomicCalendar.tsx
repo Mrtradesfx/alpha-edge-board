@@ -2,8 +2,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Globe } from "lucide-react";
+import { Clock, Globe, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useEconomicCalendar } from "@/hooks/useEconomicCalendar";
 
 interface EconomicCalendarProps {
   preview?: boolean;
@@ -13,69 +14,13 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [selectedImpact, setSelectedImpact] = useState("all");
 
-  // Enhanced mock economic events data
-  const events = [
-    {
-      id: 1,
-      time: "08:30",
-      country: "USD",
-      event: "Non-Farm Payrolls",
-      impact: "high",
-      forecast: "200K",
-      previous: "187K",
-      actual: "210K"
-    },
-    {
-      id: 2,
-      time: "10:00",
-      country: "EUR",
-      event: "ECB Interest Rate Decision",
-      impact: "high",
-      forecast: "4.00%",
-      previous: "4.00%",
-      actual: null
-    },
-    {
-      id: 3,
-      time: "14:00",
-      country: "GBP",
-      event: "GDP q/q",
-      impact: "medium",
-      forecast: "0.3%",
-      previous: "0.1%",
-      actual: null
-    },
-    {
-      id: 4,
-      time: "16:30",
-      country: "CAD",
-      event: "Manufacturing PMI",
-      impact: "low",
-      forecast: "51.2",
-      previous: "50.8",
-      actual: null
-    },
-    {
-      id: 5,
-      time: "09:45",
-      country: "EUR",
-      event: "Inflation Rate YoY",
-      impact: "high",
-      forecast: "2.4%",
-      previous: "2.6%",
-      actual: "2.4%"
-    },
-    {
-      id: 6,
-      time: "15:00",
-      country: "USD",
-      event: "Fed Chair Speech",
-      impact: "high",
-      forecast: "-",
-      previous: "-",
-      actual: null
-    }
-  ];
+  const { data: events = [], isLoading, error, refetch } = useEconomicCalendar([
+    'United States', 
+    'Euro Zone', 
+    'United Kingdom', 
+    'Canada', 
+    'Japan'
+  ]);
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
@@ -96,7 +41,10 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
       EUR: "🇪🇺", 
       GBP: "🇬🇧",
       CAD: "🇨🇦",
-      JPY: "🇯🇵"
+      JPY: "🇯🇵",
+      AUD: "🇦🇺",
+      CHF: "🇨🇭",
+      NZD: "🇳🇿"
     };
     return flags[currency] || "🌍";
   };
@@ -116,31 +64,62 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
           <CardTitle className="text-white flex items-center gap-2">
             <Clock className="w-5 h-5" />
             Economic Calendar
+            {isLoading && <RefreshCw className="w-4 h-4 animate-spin" />}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {displayEvents.map((event) => (
-              <div key={event.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-700/30 hover:bg-gray-700/50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-400 font-mono min-w-[3rem]">{event.time}</span>
-                  <span className="text-lg">{getCurrencyFlag(event.country)}</span>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-white font-medium">{event.event}</span>
-                    <span className="text-xs text-gray-400">{event.country}</span>
+          {isLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-gray-700/30 animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-4 bg-gray-600 rounded"></div>
+                    <div className="w-6 h-6 bg-gray-600 rounded"></div>
+                    <div className="w-32 h-4 bg-gray-600 rounded"></div>
                   </div>
+                  <div className="w-16 h-6 bg-gray-600 rounded"></div>
                 </div>
-                <Badge variant="outline" className={`${getImpactColor(event.impact)} text-xs`}>
-                  {event.impact.toUpperCase()}
-                </Badge>
-              </div>
-            ))}
-            {filteredEvents.length > 3 && (
-              <div className="text-xs text-gray-400 text-center pt-2 border-t border-gray-600">
-                {filteredEvents.length - 3} more events today
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-4">
+              <div className="text-red-400 mb-2">Failed to load events</div>
+              <button 
+                onClick={() => refetch()} 
+                className="text-xs text-blue-400 hover:text-blue-300"
+              >
+                Try again
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {displayEvents.map((event) => (
+                <div key={event.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-700/30 hover:bg-gray-700/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-400 font-mono min-w-[3rem]">{event.time}</span>
+                    <span className="text-lg">{getCurrencyFlag(event.country)}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm text-white font-medium">{event.event}</span>
+                      <span className="text-xs text-gray-400">{event.country}</span>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className={`${getImpactColor(event.impact)} text-xs`}>
+                    {event.impact.toUpperCase()}
+                  </Badge>
+                </div>
+              ))}
+              {filteredEvents.length > 3 && (
+                <div className="text-xs text-gray-400 text-center pt-2 border-t border-gray-600">
+                  {filteredEvents.length - 3} more events today
+                </div>
+              )}
+              {displayEvents.length === 0 && !isLoading && (
+                <div className="text-center py-4 text-gray-400">
+                  No events scheduled for today
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     );
@@ -154,6 +133,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
             <CardTitle className="text-white flex items-center gap-2">
               <Clock className="w-5 h-5" />
               Economic Calendar
+              {isLoading && <RefreshCw className="w-4 h-4 animate-spin" />}
             </CardTitle>
             <div className="flex gap-2">
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
@@ -166,6 +146,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
                   <SelectItem value="EUR" className="text-white">🇪🇺 EUR</SelectItem>
                   <SelectItem value="GBP" className="text-white">🇬🇧 GBP</SelectItem>
                   <SelectItem value="CAD" className="text-white">🇨🇦 CAD</SelectItem>
+                  <SelectItem value="JPY" className="text-white">🇯🇵 JPY</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -184,55 +165,89 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {displayEvents.map((event) => (
-              <Card key={event.id} className="bg-gray-700/30 border-gray-600 hover:bg-gray-700/50 transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <span className="text-white font-mono">{event.time}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{getCurrencyFlag(event.country)}</span>
-                        <span className="text-sm text-gray-300">{event.country}</span>
-                      </div>
-                      <Badge variant="outline" className={getImpactColor(event.impact)}>
-                        {event.impact.toUpperCase()}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-white font-semibold mb-3">{event.event}</h3>
-                  
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <div className="text-gray-400">Forecast</div>
-                      <div className="text-blue-400 font-mono">{event.forecast}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400">Previous</div>
-                      <div className="text-gray-300 font-mono">{event.previous}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400">Actual</div>
-                      <div className={`font-mono ${event.actual ? 'text-green-400' : 'text-gray-500'}`}>
-                        {event.actual || 'TBD'}
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Card key={i} className="bg-gray-700/30 border-gray-600 animate-pulse">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-4 bg-gray-600 rounded"></div>
+                        <div className="w-8 h-8 bg-gray-600 rounded"></div>
+                        <div className="w-20 h-6 bg-gray-600 rounded"></div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            
-            {displayEvents.length === 0 && (
-              <div className="text-center py-8">
-                <div className="text-gray-400 mb-2">No events match your filters</div>
-                <div className="text-sm text-gray-500">Try adjusting your country or impact level filters</div>
-              </div>
-            )}
-          </div>
+                    <div className="w-48 h-6 bg-gray-600 rounded mb-3"></div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="w-16 h-8 bg-gray-600 rounded"></div>
+                      <div className="w-16 h-8 bg-gray-600 rounded"></div>
+                      <div className="w-16 h-8 bg-gray-600 rounded"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <div className="text-red-400 mb-4">Failed to load economic events</div>
+              <button 
+                onClick={() => refetch()} 
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {displayEvents.map((event) => (
+                <Card key={event.id} className="bg-gray-700/30 border-gray-600 hover:bg-gray-700/50 transition-colors">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-gray-400" />
+                          <span className="text-white font-mono">{event.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{getCurrencyFlag(event.country)}</span>
+                          <span className="text-sm text-gray-300">{event.country}</span>
+                        </div>
+                        <Badge variant="outline" className={getImpactColor(event.impact)}>
+                          {event.impact.toUpperCase()}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-white font-semibold mb-3">{event.event}</h3>
+                    
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <div className="text-gray-400">Forecast</div>
+                        <div className="text-blue-400 font-mono">{event.forecast}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">Previous</div>
+                        <div className="text-gray-300 font-mono">{event.previous}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">Actual</div>
+                        <div className={`font-mono ${event.actual ? 'text-green-400' : 'text-gray-500'}`}>
+                          {event.actual || 'TBD'}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {displayEvents.length === 0 && (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-2">No events match your filters</div>
+                  <div className="text-sm text-gray-500">Try adjusting your country or impact level filters</div>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
