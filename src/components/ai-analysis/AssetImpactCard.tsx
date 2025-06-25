@@ -82,7 +82,7 @@ const AssetImpactCard = ({ impact }: AssetImpactCardProps) => {
             </div>
             <div className="space-y-1">
               <div className="text-gray-400">Timeframe</div>
-              <Badge variant="outline" className={getTimeframeColor(impact.timeframe)} size="sm">
+              <Badge variant="outline" className={`${getTimeframeColor(impact.timeframe)} text-xs`}>
                 <Clock className="w-3 h-3 mr-1" />
                 {impact.timeframe}-term
               </Badge>
