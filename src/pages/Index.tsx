@@ -10,7 +10,8 @@ import CurrencyHeatMap from "@/components/CurrencyHeatMap";
 import ModernSidebar from "@/components/ModernSidebar";
 import ModernHeader from "@/components/ModernHeader";
 import ModernStatsCard from "@/components/ModernStatsCard";
-import { TrendingUp, Calendar, Activity, Newspaper, DollarSign, Target, Users, BarChart3 } from "lucide-react";
+import NewsGlobe from "@/components/NewsGlobe";
+import { TrendingUp, Activity, Newspaper, DollarSign, Target, Users, BarChart3 } from "lucide-react";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -20,9 +21,9 @@ const Index = () => {
     switch (activeTab) {
       case "overview":
         return (
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
               <ModernStatsCard
                 title="Total Assets Tracked"
                 value="2,382"
@@ -58,63 +59,54 @@ const Index = () => {
             </div>
 
             {/* Main Dashboard Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-base sm:text-lg">
+                <CardHeader className="pb-2 sm:pb-3">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
                     <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                     Asset Heat Map
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 p-3 sm:p-6">
+                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
                   <CurrencyHeatMap preview={true} />
                 </CardContent>
               </Card>
 
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-base sm:text-lg">
+                <CardHeader className="pb-2 sm:pb-3">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
                     <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
                     COT Summary
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 p-3 sm:p-6">
+                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
                   <COTDashboard preview={true} />
                 </CardContent>
               </Card>
 
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-base sm:text-lg">
-                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
-                    Today's Events
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 p-3 sm:p-6">
-                  <EconomicCalendar preview={true} />
-                </CardContent>
-              </Card>
+              {/* Replace Economic Calendar with NewsGlobe */}
+              <NewsGlobe />
 
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-base sm:text-lg">
+                <CardHeader className="pb-2 sm:pb-3">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
                     <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
                     Market Sentiment
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 p-3 sm:p-6">
+                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
                   <SentimentAnalysis preview={true} />
                 </CardContent>
               </Card>
 
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 lg:col-span-2">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-base sm:text-lg">
+                <CardHeader className="pb-2 sm:pb-3">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
                     <Newspaper className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
                     Latest News
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 p-3 sm:p-6">
+                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
                   <NewsAggregator preview={true} />
                 </CardContent>
               </Card>
@@ -148,7 +140,7 @@ const Index = () => {
       <div className="lg:ml-16">
         <ModernHeader sidebarCollapsed={sidebarCollapsed} />
         
-        <main className="p-3 sm:p-4 lg:p-6">
+        <main className="p-2 sm:p-3 lg:p-4 xl:p-6">
           {renderContent()}
         </main>
       </div>
