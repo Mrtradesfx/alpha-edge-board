@@ -16,7 +16,7 @@ interface NewsLocation {
 const NewsGlobe = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const [rotation, setRotation] = useState(0);
+  const rotationRef = useRef(0);
   const [canvasReady, setCanvasReady] = useState(false);
   const [newsLocations] = useState<NewsLocation[]>([
     { id: 1, lat: 40.7128, lng: -74.0060, intensity: 0.9, sentiment: "bullish", headline: "Fed Rate Decision" },
@@ -122,9 +122,9 @@ const NewsGlobe = () => {
           }
         }
 
-        // Draw longitude lines
+        // Draw longitude lines with rotation
         for (let i = 0; i < 6; i++) {
-          const angle = (i * Math.PI) / 3 + rotation;
+          const angle = (i * Math.PI) / 3 + rotationRef.current;
           const radiusX = Math.abs(radius * Math.cos(angle));
           if (radiusX > 0) {
             ctx.beginPath();
@@ -136,7 +136,7 @@ const NewsGlobe = () => {
         // Draw news location lights
         newsLocations.forEach((location) => {
           const phi = (90 - location.lat) * (Math.PI / 180);
-          const theta = (location.lng + rotation * 57.3) * (Math.PI / 180);
+          const theta = (location.lng + rotationRef.current * 57.3) * (Math.PI / 180);
           
           const x = centerX + radius * Math.sin(phi) * Math.cos(theta);
           const y = centerY + radius * Math.cos(phi);
@@ -178,7 +178,10 @@ const NewsGlobe = () => {
           }
         });
 
-        setRotation(prev => prev + 0.005);
+        // Update rotation for spinning effect
+        rotationRef.current += 0.01;
+        
+        console.log('Globe spinning, rotation:', rotationRef.current);
       } catch (error) {
         console.error('Canvas drawing error:', error);
       }
