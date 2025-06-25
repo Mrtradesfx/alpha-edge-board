@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import ModernSidebar from "@/components/ModernSidebar";
 import ModernHeader from "@/components/ModernHeader";
@@ -39,8 +37,6 @@ const Index = () => {
       case "overview":
         return (
           <div className="space-y-6">
-            <TradingViewBanner />
-            
             {/* Desktop 4-card grid layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Top Left - Globe */}
@@ -161,4 +157,3 @@ const Index = () => {
 };
 
 export default Index;
-
