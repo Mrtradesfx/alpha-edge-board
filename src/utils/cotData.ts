@@ -3,7 +3,7 @@ export interface COTDataPoint {
   date: string;
   commercial: number;
   nonCommercial: number;
-  total: number;
+  total?: number;
 }
 
 export const generateCOTData = (asset: string, offset = 0): COTDataPoint[] => [

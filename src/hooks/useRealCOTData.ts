@@ -11,6 +11,7 @@ export interface COTDataPoint {
   nonCommercial: number;
   commercial2?: number;
   nonCommercial2?: number;
+  total?: number;
 }
 
 export const useRealCOTData = (assetSymbol: string) => {
@@ -61,6 +62,7 @@ export const useRealCOTData = (assetSymbol: string) => {
           date: new Date(report.report_date).toLocaleDateString(),
           commercial: report.commercial_net,
           nonCommercial: report.non_commercial_net,
+          total: report.total_open_interest,
         }));
 
       console.log(`Loaded ${transformedData.length} COT data points for ${assetSymbol}`);
@@ -163,6 +165,7 @@ export const useRealCOTComparison = (assetSymbol1: string, assetSymbol2: string)
               nonCommercial: report1.non_commercial_net,
               commercial2: report2.commercial_net,
               nonCommercial2: report2.non_commercial_net,
+              total: report1.total_open_interest,
             };
           })
           .filter(item => item !== null)
