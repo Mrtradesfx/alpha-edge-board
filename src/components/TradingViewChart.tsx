@@ -23,18 +23,18 @@ const TradingViewChart = ({
   symbol = "FX:EURUSD",
   colorTheme = 'light',
   width = "100%",
-  height = 400,
+  height = 300,
   interval = "D",
-  hideSideToolbar = false,
+  hideSideToolbar = true,
   allowSymbolChange = true,
-  saveImage = true,
-  hideDateRanges = false,
-  hideMarketStatus = false,
-  hideSymbolSearch = false,
-  showPopupButton = true,
+  saveImage = false,
+  hideDateRanges = true,
+  hideMarketStatus = true,
+  hideSymbolSearch = true,
+  showPopupButton = false,
   locale = "en",
   utcOffset = "Etc/UTC",
-  autosize = true
+  autosize = false
 }: TradingViewChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -69,14 +69,15 @@ const TradingViewChart = ({
           save_image: saveImage,
           hide_side_toolbar: hideSideToolbar,
           hide_legend: false,
-          hide_volume: false,
-          studies: [
-            "MASimple@tv-basicstudies",
-            "RSI@tv-basicstudies"
-          ],
+          hide_volume: true,
+          studies: [],
           show_popup_button: showPopupButton,
           popup_width: "1000",
-          popup_height: "650"
+          popup_height: "650",
+          details: false,
+          hotlist: false,
+          calendar: false,
+          news: []
         });
       }
     };
@@ -91,11 +92,12 @@ const TradingViewChart = ({
   }, [symbol, colorTheme, width, height, interval, hideSideToolbar, allowSymbolChange, saveImage, hideDateRanges, hideMarketStatus, hideSymbolSearch, showPopupButton, locale, utcOffset, autosize]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full" style={{ height: typeof height === 'number' ? `${height}px` : height }}>
       <div 
         ref={containerRef}
         id={`tradingview_chart_${Math.random().toString(36).substr(2, 9)}`}
-        className="w-full h-full min-h-[400px]"
+        className="w-full h-full"
+        style={{ height: typeof height === 'number' ? `${height}px` : height }}
       />
     </div>
   );
@@ -108,4 +110,4 @@ declare global {
   }
 }
 
-export default TradingViewChart;
+export default TradingView;

@@ -88,10 +88,10 @@ const Index = () => {
                 </CardContent>
               </Card>
 
-              {/* Replace Economic Calendar with NewsGlobe */}
+              {/* NewsGlobe */}
               <NewsGlobe />
 
-              {/* Replace Market Sentiment with TradingView Chart */}
+              {/* TradingView Chart with better proportions */}
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                 <CardHeader className="pb-2 sm:pb-3">
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
@@ -100,15 +100,20 @@ const Index = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
-                  <TradingViewChart 
-                    symbol="FX:EURUSD"
-                    colorTheme="light"
-                    height={300}
-                    hideSideToolbar={true}
-                    allowSymbolChange={false}
-                    hideDateRanges={true}
-                    showPopupButton={false}
-                  />
+                  <div className="h-64">
+                    <TradingViewChart 
+                      symbol="FX:EURUSD"
+                      colorTheme="light"
+                      height={240}
+                      hideSideToolbar={true}
+                      allowSymbolChange={false}
+                      hideDateRanges={true}
+                      showPopupButton={false}
+                      hideMarketStatus={true}
+                      hideSymbolSearch={true}
+                      saveImage={false}
+                    />
+                  </div>
                 </CardContent>
               </Card>
 
