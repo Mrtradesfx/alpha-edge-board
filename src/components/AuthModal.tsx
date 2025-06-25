@@ -66,16 +66,16 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl bg-gray-900 border-gray-700 text-white">
-        <DialogHeader>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700 text-white">
+        <DialogHeader className="pb-4">
           <DialogTitle className="text-2xl font-bold text-center">
             Join TraderBoard
           </DialogTitle>
         </DialogHeader>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left side - Auth Forms */}
-          <div>
+          <div className="space-y-4">
             <Tabs defaultValue="login" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2 bg-gray-800">
                 <TabsTrigger value="login" className="data-[state=active]:bg-gray-700">
