@@ -110,7 +110,7 @@ const Index = () => {
           </div>
         );
         
-      case "alerts":
+      case "smart-alerts":
         return (
           <div className="space-y-6">
             {!user && (
@@ -129,7 +129,7 @@ const Index = () => {
           </div>
         );
         
-      case "chat":
+      case "chatroom":
         return <ChatRoom />;
         
       case "ai-coach":
@@ -162,8 +162,8 @@ const Index = () => {
       
       <div className="flex">
         <ModernSidebar
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          activeTab={activeSection}
+          onTabChange={setActiveSection}
         />
         
         <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
