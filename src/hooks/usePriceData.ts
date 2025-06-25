@@ -20,18 +20,13 @@ export const usePriceData = () => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log('Fetching real price data from Alpha Vantage...');
       
       const realPrices = await fetchRealPrices();
-      
-      console.log('Received price data:', realPrices);
-      console.log('Available price data keys:', Object.keys(realPrices));
       
       if (Object.keys(realPrices).length > 0) {
         setPriceData(realPrices);
         setIsRealData(true);
         setLastUpdated(new Date());
-        console.log('Successfully loaded Alpha Vantage price data for', Object.keys(realPrices).length, 'assets');
       } else {
         throw new Error('No price data received from Alpha Vantage');
       }
@@ -39,7 +34,6 @@ export const usePriceData = () => {
       console.error('Alpha Vantage price feed failed:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch price data');
       setIsRealData(false);
-      // Don't fallback to mock data - show error instead
       setPriceData({});
     } finally {
       setIsLoading(false);

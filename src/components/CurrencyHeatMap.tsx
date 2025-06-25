@@ -60,10 +60,9 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
     };
   };
 
-  // Map asset values to price data keys - Fixed mapping
-  const getPriceDataKey = (assetValue: string): string => {
-    // Map asset values to the actual keys available in priceData from Alpha Vantage
-    const mapping: Record<string, string> = {
+  // Map asset values to price data keys
+  const getPriceDataKey = (assetValue: string): string | null => {
+    const mapping: Record<string, string | null> = {
       // Major currencies that we have data for
       'EUR': 'EUR/USD',
       'GBP': 'GBP/USD', 
@@ -122,8 +121,6 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   const assetData: AssetStrength[] = liveData?.length > 0 ? liveData : assets.map(asset => {
     const priceKey = getPriceDataKey(asset.value);
     const priceInfo = priceKey ? priceData[priceKey] : null;
-    
-    console.log(`Asset: ${asset.value}, Price Key: ${priceKey}, Price Info:`, priceInfo);
     
     return {
       asset: asset.label, // Use the label (e.g., "EUR/USD") for display
