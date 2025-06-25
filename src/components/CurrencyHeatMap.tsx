@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,42 +60,70 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
     };
   };
 
-  // Map asset values to price data keys
+  // Map asset values to price data keys - Fixed mapping
   const getPriceDataKey = (assetValue: string): string => {
-    // Map asset values to the actual keys in priceData
+    // Map asset values to the actual keys available in priceData from Alpha Vantage
     const mapping: Record<string, string> = {
+      // Major currencies that we have data for
       'EUR': 'EUR/USD',
       'GBP': 'GBP/USD', 
       'JPY': 'USD/JPY',
-      'CHF': 'USD/CHF',
-      'CAD': 'USD/CAD',
       'AUD': 'AUD/USD',
+      'CAD': 'USD/CAD',
+      'CHF': 'USD/CHF',
       'NZD': 'NZD/USD',
       'EURGBP': 'EUR/GBP',
       'EURJPY': 'EUR/JPY',
       'GBPJPY': 'GBP/JPY',
+      
+      // Crypto
       'BTC': 'BTC',
       'ETH': 'ETH',
-      'GOLD': 'GOLD',
-      'SILVER': 'SILVER',
-      'OIL': 'OIL',
-      'COPPER': 'COPPER',
+      
+      // Indices (mapped to ETF symbols we use)
       'US30': 'US30',
       'NASDAQ': 'NAS100',
       'SP500': 'SPX500',
-      'DAX': 'GER40',
-      'FTSE': 'UK100',
-      'NIKKEI': 'JPN225',
-      'ASX': 'AUS200'
+      
+      // For assets we don't have API data, return null
+      'GOLD': null,
+      'SILVER': null,
+      'OIL': null,
+      'COPPER': null,
+      'WHEAT': null,
+      'CORN': null,
+      'SOYBEAN': null,
+      'NATGAS': null,
+      'BRENT': null,
+      'LTC': null,
+      'XRP': null,
+      'DAX': null,
+      'FTSE': null,
+      'NIKKEI': null,
+      'ASX': null,
+      'RUSSELL': null,
+      'USDTRY': null,
+      'USDZAR': null,
+      'USDMXN': null,
+      'USDSEK': null,
+      'USDNOK': null,
+      'USDPLN': null,
+      'USDSGD': null,
+      'USDHKD': null,
+      'EURCHF': null,
+      'GBPCHF': null,
+      'CHFJPY': null
     };
     
-    return mapping[assetValue] || assetValue;
+    return mapping[assetValue] || null;
   };
 
   // Combine asset data with price data and timeframe data
   const assetData: AssetStrength[] = liveData?.length > 0 ? liveData : assets.map(asset => {
     const priceKey = getPriceDataKey(asset.value);
-    const priceInfo = priceData[priceKey];
+    const priceInfo = priceKey ? priceData[priceKey] : null;
+    
+    console.log(`Asset: ${asset.value}, Price Key: ${priceKey}, Price Info:`, priceInfo);
     
     return {
       asset: asset.label, // Use the label (e.g., "EUR/USD") for display

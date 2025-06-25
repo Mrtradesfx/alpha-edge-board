@@ -24,6 +24,9 @@ export const usePriceData = () => {
       
       const realPrices = await fetchRealPrices();
       
+      console.log('Received price data:', realPrices);
+      console.log('Available price data keys:', Object.keys(realPrices));
+      
       if (Object.keys(realPrices).length > 0) {
         setPriceData(realPrices);
         setIsRealData(true);
