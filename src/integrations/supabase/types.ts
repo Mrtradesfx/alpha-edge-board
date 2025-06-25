@@ -9,7 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cot_reports: {
+        Row: {
+          asset_name: string
+          asset_symbol: string
+          commercial_long: number
+          commercial_net: number
+          commercial_short: number
+          created_at: string
+          id: string
+          non_commercial_long: number
+          non_commercial_net: number
+          non_commercial_short: number
+          report_date: string
+          total_open_interest: number
+          updated_at: string
+        }
+        Insert: {
+          asset_name: string
+          asset_symbol: string
+          commercial_long?: number
+          commercial_net?: number
+          commercial_short?: number
+          created_at?: string
+          id?: string
+          non_commercial_long?: number
+          non_commercial_net?: number
+          non_commercial_short?: number
+          report_date: string
+          total_open_interest?: number
+          updated_at?: string
+        }
+        Update: {
+          asset_name?: string
+          asset_symbol?: string
+          commercial_long?: number
+          commercial_net?: number
+          commercial_short?: number
+          created_at?: string
+          id?: string
+          non_commercial_long?: number
+          non_commercial_net?: number
+          non_commercial_short?: number
+          report_date?: string
+          total_open_interest?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
