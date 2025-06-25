@@ -84,7 +84,7 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   );
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-gray-800/50 border-gray-700 relative z-10">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -113,24 +113,24 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
       </CardHeader>
       <CardContent className="p-3 sm:p-6">
         <Tabs defaultValue="forex" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-gray-700/50 mb-6 h-auto">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-700/50 mb-6 h-auto relative z-20">
             <TabsTrigger 
               value="forex" 
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3 bg-transparent"
             >
               <span className="hidden sm:inline">Forex ({forexAssets.length})</span>
               <span className="sm:hidden">FX ({forexAssets.length})</span>
             </TabsTrigger>
             <TabsTrigger 
               value="commodities" 
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3 bg-transparent"
             >
               <span className="hidden sm:inline">Commodities ({commodityAssets.length})</span>
               <span className="sm:hidden">Comm ({commodityAssets.length})</span>
             </TabsTrigger>
             <TabsTrigger 
               value="indices" 
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3 bg-transparent"
             >
               <span className="hidden sm:inline">Indices ({indexAssets.length})</span>
               <span className="sm:hidden">Idx ({indexAssets.length})</span>
