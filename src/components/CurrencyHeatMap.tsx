@@ -41,9 +41,9 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   
   const commodityAssets = assetData.filter(asset => asset.category === "Commodities");
   
-  const indexAssets = assetData.filter(asset => 
-    asset.category === "Indices" || asset.category === "Cryptocurrencies"
-  );
+  const indexAssets = assetData.filter(asset => asset.category === "Indices");
+  
+  const cryptoAssets = assetData.filter(asset => asset.category === "Cryptocurrencies");
 
   if (preview) {
     return <HeatMapPreview assetData={assetData} isConnected={isConnected} isRealData={isRealData} />;
@@ -84,7 +84,7 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   );
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700 relative z-10">
+    <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -113,27 +113,30 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
       </CardHeader>
       <CardContent className="p-3 sm:p-6">
         <Tabs defaultValue="forex" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-gray-700/50 mb-6 h-auto relative z-20">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-700/50 mb-6 h-auto">
             <TabsTrigger 
               value="forex" 
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3 bg-transparent"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-1 sm:px-3"
             >
-              <span className="hidden sm:inline">Forex ({forexAssets.length})</span>
-              <span className="sm:hidden">FX ({forexAssets.length})</span>
+              Forex
             </TabsTrigger>
             <TabsTrigger 
               value="commodities" 
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3 bg-transparent"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-1 sm:px-3"
             >
-              <span className="hidden sm:inline">Commodities ({commodityAssets.length})</span>
-              <span className="sm:hidden">Comm ({commodityAssets.length})</span>
+              Commodities
             </TabsTrigger>
             <TabsTrigger 
               value="indices" 
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-2 sm:px-3 bg-transparent"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-1 sm:px-3"
             >
-              <span className="hidden sm:inline">Indices ({indexAssets.length})</span>
-              <span className="sm:hidden">Idx ({indexAssets.length})</span>
+              Indices
+            </TabsTrigger>
+            <TabsTrigger 
+              value="crypto" 
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-300 text-xs sm:text-sm py-2 px-1 sm:px-3"
+            >
+              Crypto
             </TabsTrigger>
           </TabsList>
           
@@ -146,7 +149,11 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
           </TabsContent>
           
           <TabsContent value="indices" className="mt-0">
-            {renderMatrixContent(indexAssets, "Indices & Crypto")}
+            {renderMatrixContent(indexAssets, "Indices")}
+          </TabsContent>
+          
+          <TabsContent value="crypto" className="mt-0">
+            {renderMatrixContent(cryptoAssets, "Crypto")}
           </TabsContent>
         </Tabs>
       </CardContent>
