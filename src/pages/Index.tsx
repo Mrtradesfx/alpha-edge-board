@@ -4,7 +4,6 @@ import ModernSidebar from "@/components/ModernSidebar";
 import ModernHeader from "@/components/ModernHeader";
 import ModernStatsCard from "@/components/ModernStatsCard";
 import COTDashboard from "@/components/COTDashboard";
-import SentimentAnalysis from "@/components/SentimentAnalysis";
 import NewsAggregator from "@/components/NewsAggregator";
 import EconomicCalendar from "@/components/EconomicCalendar";
 import TradingViewChart from "@/components/TradingViewChart";
@@ -41,12 +40,9 @@ const Index = () => {
           <div className="space-y-6">
             <TradingViewBanner />
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <TradingViewChart />
-              <SentimentAnalysis />
-            </div>
-            
             <NewsGlobe />
+            
+            <TradingViewChart />
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <NewsAggregator preview={true} />
