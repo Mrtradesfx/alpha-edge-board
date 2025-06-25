@@ -16,7 +16,7 @@ const ModernHeader = ({ sidebarCollapsed }: ModernHeaderProps) => {
     <header className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
       <div className="flex items-center justify-between px-3 sm:px-6 py-3 min-h-[64px]">
         {/* Left section - Title */}
-        <div className="flex-1 min-w-0 ml-12 lg:ml-0">
+        <div className="flex-1 min-w-0">
           <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">
             Analytics Dashboard
           </h1>

@@ -131,16 +131,16 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex w-full">
       <ModernSidebar 
         activeTab={activeTab} 
         onTabChange={setActiveTab}
       />
       
-      <div className="lg:ml-16">
+      <div className="flex-1 flex flex-col lg:ml-0">
         <ModernHeader sidebarCollapsed={sidebarCollapsed} />
         
-        <main className="p-2 sm:p-3 lg:p-4 xl:p-6">
+        <main className="flex-1 p-2 sm:p-3 lg:p-4 xl:p-6">
           {renderContent()}
         </main>
       </div>
