@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,11 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import COTDashboard from "@/components/COTDashboard";
 import EconomicCalendar from "@/components/EconomicCalendar";
 import SentimentAnalysis from "@/components/SentimentAnalysis";
+import AssetSentimentSelector from "@/components/AssetSentimentSelector";
 import NewsAggregator from "@/components/NewsAggregator";
 import CurrencyHeatMap from "@/components/CurrencyHeatMap";
 import Navigation from "@/components/Navigation";
 import AuthModal from "@/components/AuthModal";
-import { TrendingUp, Calendar, Activity, Newspaper, DollarSign } from "lucide-react";
+import { TrendingUp, Calendar, Activity, Newspaper, DollarSign, Target } from "lucide-react";
 
 const Index = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -46,7 +48,7 @@ const Index = () => {
 
         {/* Dashboard Content */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 bg-gray-800/50 border border-gray-700">
+          <TabsList className="grid w-full grid-cols-7 bg-gray-800/50 border border-gray-700">
             <TabsTrigger value="overview" className="data-[state=active]:bg-gray-700">
               Overview
             </TabsTrigger>
@@ -64,7 +66,11 @@ const Index = () => {
             </TabsTrigger>
             <TabsTrigger value="sentiment" className="data-[state=active]:bg-gray-700">
               <Activity className="w-4 h-4 mr-2" />
-              Sentiment
+              Market
+            </TabsTrigger>
+            <TabsTrigger value="asset-sentiment" className="data-[state=active]:bg-gray-700">
+              <Target className="w-4 h-4 mr-2" />
+              Asset
             </TabsTrigger>
             <TabsTrigger value="news" className="data-[state=active]:bg-gray-700">
               <Newspaper className="w-4 h-4 mr-2" />
@@ -151,6 +157,10 @@ const Index = () => {
 
           <TabsContent value="sentiment">
             <SentimentAnalysis />
+          </TabsContent>
+
+          <TabsContent value="asset-sentiment">
+            <AssetSentimentSelector />
           </TabsContent>
 
           <TabsContent value="news">
