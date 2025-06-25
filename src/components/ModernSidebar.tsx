@@ -31,7 +31,7 @@ const sidebarItems = [
   { id: "overview", label: "Overview", icon: Home },
   { id: "heatmap", label: "Heat Map", icon: DollarSign },
   { id: "cot", label: "COT Data", icon: TrendingUp },
-  { id: "calendar", label: "Economic Calendar", icon: Calendar },
+  { id: "calendar", label: "Trading Calendar", icon: Calendar },
   { id: "sentiment", label: "Market Sentiment", icon: Activity },
   { id: "asset-sentiment", label: "Asset Analysis", icon: Target },
   { id: "news", label: "News Feed", icon: Newspaper },

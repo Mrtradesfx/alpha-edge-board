@@ -15,6 +15,8 @@ import Navigation from "@/components/Navigation";
 import AuthModal from "@/components/AuthModal";
 import CurrencyHeatMap from "@/components/CurrencyHeatMap";
 import NewsGlobe from "@/components/NewsGlobe";
+import TradingCalendar from "@/components/TradingCalendar";
+import AICoachSidebar from "@/components/AICoachSidebar";
 import { TrendingUp, DollarSign, BarChart3, Bell, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -23,6 +25,7 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showAICoach, setShowAICoach] = useState(false);
 
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -119,6 +122,19 @@ const Index = () => {
         
       case "heatmap":
         return <CurrencyHeatMap />;
+        
+      case "calendar":
+        return <TradingCalendar />;
+        
+      case "ai-analysis":
+        return (
+          <div className="flex h-full">
+            <div className="flex-1">
+              <TradingCalendar />
+            </div>
+            {showAICoach && <AICoachSidebar />}
+          </div>
+        );
         
       default:
         return (

@@ -57,6 +57,39 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_summary: {
+        Row: {
+          ai_flagged: boolean
+          created_at: string
+          date: string
+          id: string
+          net_pnl: number
+          trade_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_flagged?: boolean
+          created_at?: string
+          date: string
+          id?: string
+          net_pnl: number
+          trade_count: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_flagged?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          net_pnl?: number
+          trade_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -81,6 +114,57 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      trades: {
+        Row: {
+          created_at: string
+          date: string
+          entry_time: string
+          exit_time: string | null
+          id: string
+          lot_size: number
+          notes: string | null
+          pnl: number
+          risk_percent: number | null
+          session: string | null
+          strategy_tag: string | null
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          entry_time: string
+          exit_time?: string | null
+          id?: string
+          lot_size: number
+          notes?: string | null
+          pnl: number
+          risk_percent?: number | null
+          session?: string | null
+          strategy_tag?: string | null
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          entry_time?: string
+          exit_time?: string | null
+          id?: string
+          lot_size?: number
+          notes?: string | null
+          pnl?: number
+          risk_percent?: number | null
+          session?: string | null
+          strategy_tag?: string | null
+          symbol?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
