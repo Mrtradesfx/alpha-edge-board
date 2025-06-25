@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Settings,
-  User
+  User,
+  Brain
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ const sidebarItems = [
   { id: "sentiment", label: "Market Sentiment", icon: Activity },
   { id: "asset-sentiment", label: "Asset Analysis", icon: Target },
   { id: "news", label: "News Feed", icon: Newspaper },
+  { id: "ai-analysis", label: "AI Analysis", icon: Brain },
 ];
 
 const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
