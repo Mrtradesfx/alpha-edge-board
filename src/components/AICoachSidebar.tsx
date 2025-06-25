@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, TrendingUp, AlertTriangle, Target, Calendar, Refresh } from 'lucide-react';
+import { Brain, TrendingUp, AlertTriangle, Target, Calendar, RefreshCw } from 'lucide-react';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -142,7 +141,7 @@ const AICoachSidebar = () => {
           onClick={fetchWeeklyStats}
           disabled={loading}
         >
-          <Refresh className={cn("w-4 h-4", loading && "animate-spin")} />
+          <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
         </Button>
       </div>
 
