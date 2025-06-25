@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Search, Settings, User } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ModernHeaderProps {
   sidebarCollapsed: boolean;
