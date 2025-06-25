@@ -1,5 +1,6 @@
 
 import { useEffect, useRef } from 'react';
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface TradingViewChartProps {
   symbol?: string;
@@ -21,7 +22,7 @@ interface TradingViewChartProps {
 
 const TradingViewChart = ({
   symbol = "FX:EURUSD",
-  colorTheme = 'light',
+  colorTheme,
   width = "100%",
   height = 300,
   interval = "D",
@@ -37,6 +38,10 @@ const TradingViewChart = ({
   autosize = false
 }: TradingViewChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
+  
+  // Use the theme context if no colorTheme prop is provided
+  const chartTheme = colorTheme || theme;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -59,10 +64,10 @@ const TradingViewChart = ({
           symbol: symbol,
           interval: interval,
           timezone: utcOffset,
-          theme: colorTheme,
+          theme: chartTheme,
           style: "1",
           locale: locale,
-          toolbar_bg: "#f1f3f6",
+          toolbar_bg: chartTheme === 'dark' ? "#1f2937" : "#f1f3f6",
           enable_publishing: false,
           withdateranges: !hideDateRanges,
           allow_symbol_change: allowSymbolChange,
@@ -91,7 +96,7 @@ const TradingViewChart = ({
         containerRef.current.innerHTML = '';
       }
     };
-  }, [symbol, colorTheme, width, height, interval, hideSideToolbar, allowSymbolChange, saveImage, hideDateRanges, hideMarketStatus, hideSymbolSearch, showPopupButton, locale, utcOffset, autosize]);
+  }, [symbol, chartTheme, width, height, interval, hideSideToolbar, allowSymbolChange, saveImage, hideDateRanges, hideMarketStatus, hideSymbolSearch, showPopupButton, locale, utcOffset, autosize]);
 
   return (
     <div className="w-full h-full">
