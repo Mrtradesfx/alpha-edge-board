@@ -21,7 +21,6 @@ import { TrendingUp, DollarSign, BarChart3, Bell, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -35,7 +34,7 @@ const Index = () => {
     // Additional logout logic if needed
   };
 
-  // Mock stats data with iconColor added
+  // Mock stats data
   const statsData = [
     {
       title: "Portfolio Value",
@@ -153,23 +152,23 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full">
       <Navigation
         isAuthenticated={!!user}
         onAuthClick={() => setShowAuthModal(true)}
         onLogout={handleLogout}
       />
       
-      <div className="flex">
+      <div className="flex w-full">
         <ModernSidebar
           activeTab={activeSection}
           onTabChange={setActiveSection}
         />
         
-        <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-          <ModernHeader sidebarCollapsed={sidebarCollapsed} />
+        <div className="flex-1 w-full">
+          <ModernHeader sidebarCollapsed={false} />
           
-          <main className="p-6 max-w-7xl mx-auto">
+          <main className="p-4 sm:p-6 max-w-7xl mx-auto w-full">
             {renderContent()}
           </main>
         </div>
