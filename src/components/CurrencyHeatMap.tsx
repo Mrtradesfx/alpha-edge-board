@@ -15,6 +15,17 @@ interface AssetStrength {
   category: string;
   price?: number;
   priceChange?: number;
+  timeframes?: {
+    M1: number;
+    M5: number;
+    M15: number;
+    M30: number;
+    H1: number;
+    H4: number;
+    D1: number;
+    W1: number;
+    MN: number;
+  };
 }
 
 interface CurrencyHeatMapProps {
@@ -25,7 +36,21 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   const { data: liveData, isLoading, isConnected, error, refetch } = useRealTimeAssetData();
   const { priceData } = usePriceData();
   
-  // Combine asset data with price data
+  // Generate timeframe data for each asset
+  const generateTimeframeData = () => {
+    const timeframes = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'];
+    const data: Record<string, number> = {};
+    
+    timeframes.forEach(tf => {
+      // Generate realistic percentage changes for each timeframe
+      const baseChange = (Math.random() - 0.5) * 20; // -10% to +10%
+      data[tf] = baseChange;
+    });
+    
+    return data;
+  };
+
+  // Combine asset data with price data and timeframe data
   const assetData: AssetStrength[] = liveData?.length > 0 ? liveData : assets.map(asset => {
     const priceInfo = priceData[asset.value];
     return {
@@ -35,20 +60,23 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
       change: (Math.random() - 0.5) * 6,
       category: asset.category,
       price: priceInfo?.price,
-      priceChange: priceInfo?.change24h
+      priceChange: priceInfo?.change24h,
+      timeframes: generateTimeframeData()
     };
   });
 
-  const getStrengthColor = (strength: number) => {
-    if (strength >= 80) return "bg-green-500";
-    if (strength >= 70) return "bg-green-400";
-    if (strength >= 60) return "bg-yellow-400";
-    if (strength >= 50) return "bg-orange-400";
-    return "bg-red-500";
+  const getPerformanceColor = (value: number) => {
+    if (value >= 5) return "bg-green-600 text-white";
+    if (value >= 2) return "bg-green-500 text-white";
+    if (value >= 0.5) return "bg-green-400 text-white";
+    if (value >= -0.5) return "bg-yellow-400 text-black";
+    if (value >= -2) return "bg-orange-500 text-white";
+    if (value >= -5) return "bg-red-500 text-white";
+    return "bg-red-600 text-white";
   };
 
-  const getStrengthOpacity = (strength: number) => {
-    return Math.max(0.3, strength / 100);
+  const formatPerformance = (value: number) => {
+    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}`;
   };
 
   const formatPrice = (price: number | undefined, asset: string) => {
@@ -65,35 +93,39 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
     }
   };
 
-  // Group assets by category
-  const groupedAssets = assetData.reduce((acc, asset) => {
-    if (!acc[asset.category]) {
-      acc[asset.category] = [];
-    }
-    acc[asset.category].push(asset);
-    return acc;
-  }, {} as Record<string, AssetStrength[]>);
-
   if (preview) {
     return (
       <div className="space-y-3">
-        <div className="grid grid-cols-4 gap-2">
-          {assetData.slice(0, 4).map((asset) => (
-            <div
-              key={asset.asset}
-              className={`${getStrengthColor(asset.strength)} rounded p-2 text-white text-center`}
-              style={{ opacity: getStrengthOpacity(asset.strength) }}
-            >
-              <div className="font-bold text-sm">{asset.asset}</div>
-              <div className="text-xs">{asset.strength}</div>
-              {asset.price && (
-                <div className="text-xs mt-1">${formatPrice(asset.price, asset.asset)}</div>
-              )}
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-600">
+                <th className="text-left py-1 px-2 text-gray-300">PAIR</th>
+                <th className="text-center py-1 px-1 text-gray-300">M1</th>
+                <th className="text-center py-1 px-1 text-gray-300">H1</th>
+                <th className="text-center py-1 px-1 text-gray-300">D1</th>
+              </tr>
+            </thead>
+            <tbody>
+              {assetData.slice(0, 4).map((asset) => (
+                <tr key={asset.asset} className="border-b border-gray-700">
+                  <td className="py-1 px-2 text-white font-mono">{asset.asset}</td>
+                  <td className={`py-1 px-1 text-center text-xs ${getPerformanceColor(asset.timeframes?.M1 || 0)}`}>
+                    {formatPerformance(asset.timeframes?.M1 || 0)}
+                  </td>
+                  <td className={`py-1 px-1 text-center text-xs ${getPerformanceColor(asset.timeframes?.H1 || 0)}`}>
+                    {formatPerformance(asset.timeframes?.H1 || 0)}
+                  </td>
+                  <td className={`py-1 px-1 text-center text-xs ${getPerformanceColor(asset.timeframes?.D1 || 0)}`}>
+                    {formatPerformance(asset.timeframes?.D1 || 0)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-gray-400">Asset Strength & Prices</span>
+          <span className="text-gray-400">Performance Matrix</span>
           <div className="flex items-center gap-1">
             {isConnected ? (
               <Wifi className="w-3 h-3 text-green-400" />
@@ -112,7 +144,7 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-green-500" />
-            <CardTitle className="text-white">Heat Map with Live Prices</CardTitle>
+            <CardTitle className="text-white">Asset Performance Matrix</CardTitle>
             <Badge variant={isConnected ? "default" : "destructive"} className="text-xs">
               {isConnected ? (
                 <>
@@ -138,113 +170,133 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
           </Button>
         </div>
         <p className="text-sm text-gray-400">
-          Real-time relative strength and current prices of all tradeable assets
+          Performance across multiple timeframes for all tradeable assets
           {error && <span className="text-red-400 block">Error: {error}</span>}
         </p>
       </CardHeader>
       <CardContent>
-        <div className="space-y-8">
-          {/* Asset Categories */}
-          {Object.entries(groupedAssets).map(([category, categoryAssets]) => (
-            <div key={category} className="space-y-4">
-              {/* Category Header */}
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold text-white">{category}</h3>
-                <div className="flex-1 h-px bg-gray-600"></div>
-                <span className="text-xs text-gray-400">{categoryAssets.length} assets</span>
-              </div>
-
-              {/* Category Heat Map Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                {categoryAssets.map((asset) => (
-                  <div
-                    key={asset.asset}
-                    className={`${getStrengthColor(asset.strength)} rounded-lg p-3 text-white relative overflow-hidden transition-all duration-300 hover:scale-105`}
-                    style={{ opacity: getStrengthOpacity(asset.strength) }}
+        <div className="space-y-6">
+          {/* Performance Matrix Table */}
+          <div className="overflow-x-auto bg-gray-900/50 rounded-lg border border-gray-700">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-800/50">
+                <tr>
+                  <th className="text-left py-3 px-4 text-gray-300 font-semibold">PAIR</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">M1</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">M5</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">M15</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">M30</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">H1</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">H4</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">D1</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">W1</th>
+                  <th className="text-center py-3 px-2 text-gray-300 font-semibold min-w-[60px]">MN</th>
+                  <th className="text-center py-3 px-4 text-gray-300 font-semibold">PRICE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {assetData.map((asset, index) => (
+                  <tr 
+                    key={asset.asset} 
+                    className={`border-b border-gray-700 hover:bg-gray-800/30 ${
+                      index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'
+                    }`}
                   >
-                    <div className="relative z-10">
-                      <div className="font-bold text-sm mb-1">{asset.asset}</div>
-                      <div className="text-xs opacity-90 mb-2 truncate">{asset.name}</div>
-                      
-                      {/* Price Information */}
-                      {asset.price && (
-                        <div className="bg-black/20 rounded px-2 py-1 mb-2">
-                          <div className="text-xs font-semibold">${formatPrice(asset.price, asset.asset)}</div>
-                          {asset.priceChange !== undefined && (
-                            <div className={`text-xs flex items-center gap-1 ${asset.priceChange >= 0 ? 'text-green-200' : 'text-red-200'}`}>
-                              {asset.priceChange >= 0 ? (
-                                <TrendingUp className="w-2 h-2" />
-                              ) : (
-                                <TrendingDown className="w-2 h-2" />
-                              )}
-                              {asset.priceChange >= 0 ? "+" : ""}{asset.priceChange.toFixed(1)}%
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      
-                      <div className="font-semibold text-lg">Strength: {asset.strength}</div>
-                      <div className="flex items-center gap-1 text-xs">
-                        {asset.change >= 0 ? (
-                          <TrendingUp className="w-3 h-3" />
-                        ) : (
-                          <TrendingDown className="w-3 h-3" />
-                        )}
-                        <span className={asset.change >= 0 ? "text-green-200" : "text-red-200"}>
-                          {asset.change >= 0 ? "+" : ""}{asset.change.toFixed(1)}%
-                        </span>
+                    <td className="py-3 px-4">
+                      <div className="flex flex-col">
+                        <span className="text-white font-mono font-semibold">{asset.asset}</span>
+                        <span className="text-xs text-gray-400 truncate max-w-[120px]">{asset.name}</span>
                       </div>
-                    </div>
-                    {/* Background pattern for visual interest */}
-                    <div className="absolute top-0 right-0 w-6 h-6 bg-white opacity-10 rounded-full transform translate-x-1 -translate-y-1"></div>
-                  </div>
+                    </td>
+                    {['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'].map(timeframe => (
+                      <td 
+                        key={timeframe}
+                        className={`py-3 px-2 text-center font-mono text-xs ${
+                          getPerformanceColor(asset.timeframes?.[timeframe as keyof typeof asset.timeframes] || 0)
+                        } rounded-sm mx-1`}
+                      >
+                        {formatPerformance(asset.timeframes?.[timeframe as keyof typeof asset.timeframes] || 0)}
+                      </td>
+                    ))}
+                    <td className="py-3 px-4 text-center">
+                      <div className="flex flex-col items-center">
+                        {asset.price && (
+                          <>
+                            <span className="text-white font-mono text-sm">
+                              ${formatPrice(asset.price, asset.asset)}
+                            </span>
+                            {asset.priceChange !== undefined && (
+                              <div className={`text-xs flex items-center gap-1 ${
+                                asset.priceChange >= 0 ? 'text-green-400' : 'text-red-400'
+                              }`}>
+                                {asset.priceChange >= 0 ? (
+                                  <TrendingUp className="w-3 h-3" />
+                                ) : (
+                                  <TrendingDown className="w-3 h-3" />
+                                )}
+                                {asset.priceChange >= 0 ? "+" : ""}{asset.priceChange.toFixed(2)}%
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
                 ))}
-              </div>
-            </div>
-          ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Legend */}
-          <div className="flex flex-col gap-2 pt-4 border-t border-gray-700">
-            <div className="text-sm font-semibold text-gray-300">Strength Scale</div>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+          <div className="flex flex-col gap-3 pt-4 border-t border-gray-700">
+            <div className="text-sm font-semibold text-gray-300">Performance Color Scale</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span>Weak (0-49)</span>
+                <div className="w-4 h-4 bg-red-600 rounded"></div>
+                <span className="text-gray-400">< -5%</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-orange-400 rounded"></div>
-                <span>Fair (50-59)</span>
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span className="text-gray-400">-5% to -2%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                <span className="text-gray-400">-2% to -0.5%</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-yellow-400 rounded"></div>
-                <span>Good (60-69)</span>
+                <span className="text-gray-400">-0.5% to +0.5%</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-400 rounded"></div>
-                <span>Strong (70-79)</span>
+                <span className="text-gray-400">+0.5% to +2%</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span>Very Strong (80+)</span>
+                <div className="w-4 h-4 bg-green-600 rounded"></div>
+                <span className="text-gray-400">> +5%</span>
               </div>
             </div>
           </div>
 
-          {/* Top Performers */}
-          <div className="bg-gray-700/30 rounded-lg p-4">
-            <div className="text-sm font-semibold text-gray-300 mb-3">Top Performers</div>
-            <div className="grid grid-cols-3 gap-4">
-              {assetData
-                .sort((a, b) => b.change - a.change)
-                .slice(0, 3)
-                .map((asset, index) => (
-                  <div key={asset.asset} className="text-center">
-                    <div className="text-lg font-bold text-white">{asset.asset}</div>
-                    <div className="text-xs text-gray-400 truncate">{asset.name}</div>
-                    <div className="text-green-400 font-semibold">+{asset.change.toFixed(1)}%</div>
-                    {index === 0 && <div className="text-xs text-yellow-400 mt-1">🏆 Best</div>}
-                  </div>
-                ))}
+          {/* Summary Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-700/30 rounded-lg p-4">
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-400">
+                {assetData.filter(a => (a.timeframes?.D1 || 0) > 2).length}
+              </div>
+              <div className="text-xs text-gray-400">Strong Performers (D1 > +2%)</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-yellow-400">
+                {assetData.filter(a => Math.abs(a.timeframes?.D1 || 0) <= 2).length}
+              </div>
+              <div className="text-xs text-gray-400">Neutral (D1 ±2%)</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-red-400">
+                {assetData.filter(a => (a.timeframes?.D1 || 0) < -2).length}
+              </div>
+              <div className="text-xs text-gray-400">Weak Performers (D1 < -2%)</div>
             </div>
           </div>
         </div>
