@@ -39,8 +39,8 @@ const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
 
   return (
     <>
-      {/* Mobile Menu Button - Fixed position with lower z-index than header */}
-      <div className="lg:hidden fixed top-4 left-4 z-30">
+      {/* Mobile Menu Button - Fixed position below header */}
+      <div className="lg:hidden fixed top-20 left-4 z-30">
         <Button
           variant="outline"
           size="sm"
@@ -51,19 +51,21 @@ const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
         </Button>
       </div>
 
-      {/* Mobile overlay - lower z-index than sidebar */}
+      {/* Mobile overlay - below header but above content */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 lg:hidden z-35"
+          className="fixed inset-0 bg-black/50 lg:hidden z-30"
+          style={{ top: '64px' }}
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Sidebar - z-index between overlay and header */}
+      {/* Sidebar - below header */}
       <div className={cn(
-        "fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 z-39",
+        "fixed left-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 z-30",
         "lg:translate-x-0 lg:static lg:h-screen lg:w-64",
-        isOpen ? "translate-x-0 w-64" : "-translate-x-full w-0 lg:w-16"
+        "lg:top-0",
+        isOpen ? "translate-x-0 w-64 top-16 h-[calc(100vh-64px)]" : "-translate-x-full w-0 lg:w-16 top-16 h-[calc(100vh-64px)]"
       )}>
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-800 h-16">
