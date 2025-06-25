@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Globe, RefreshCw } from "lucide-react";
+import { Clock, Globe, RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { useEconomicCalendar } from "@/hooks/useEconomicCalendar";
 
@@ -57,6 +57,39 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
 
   const displayEvents = preview ? filteredEvents.slice(0, 3) : filteredEvents;
 
+  // Error state component
+  const ErrorState = ({ isPreview = false }: { isPreview?: boolean }) => (
+    <div className={`text-center ${isPreview ? 'py-4' : 'py-8'}`}>
+      <AlertCircle className={`mx-auto text-red-400 mb-3 ${isPreview ? 'w-6 h-6' : 'w-8 h-8'}`} />
+      <div className="text-red-400 mb-2">
+        {isPreview ? 'API Access Required' : 'Economic Calendar Unavailable'}
+      </div>
+      <div className={`text-gray-400 mb-4 ${isPreview ? 'text-xs' : 'text-sm'}`}>
+        Trading Economics API requires authentication
+      </div>
+      {!isPreview && (
+        <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
+          <button 
+            onClick={() => refetch()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry
+          </button>
+          <a 
+            href="https://tradingeconomics.com/contact.aspx?subject=API"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Get API Access
+          </a>
+        </div>
+      )}
+    </div>
+  );
+
   if (preview) {
     return (
       <Card className="bg-gray-800/50 border-gray-700">
@@ -82,15 +115,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
               ))}
             </div>
           ) : error ? (
-            <div className="text-center py-4">
-              <div className="text-red-400 mb-2">Failed to load events</div>
-              <button 
-                onClick={() => refetch()} 
-                className="text-xs text-blue-400 hover:text-blue-300"
-              >
-                Try again
-              </button>
-            </div>
+            <ErrorState isPreview={true} />
           ) : (
             <div className="space-y-3">
               {displayEvents.map((event) => (
@@ -113,7 +138,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
                   {filteredEvents.length - 3} more events today
                 </div>
               )}
-              {displayEvents.length === 0 && !isLoading && (
+              {displayEvents.length === 0 && !isLoading && !error && (
                 <div className="text-center py-4 text-gray-400">
                   No events scheduled for today
                 </div>
@@ -135,33 +160,35 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
               Economic Calendar
               {isLoading && <RefreshCw className="w-4 h-4 animate-spin" />}
             </CardTitle>
-            <div className="flex gap-2">
-              <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
-                  <SelectValue placeholder="Country" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="all" className="text-white">All Countries</SelectItem>
-                  <SelectItem value="USD" className="text-white">🇺🇸 USD</SelectItem>
-                  <SelectItem value="EUR" className="text-white">🇪🇺 EUR</SelectItem>
-                  <SelectItem value="GBP" className="text-white">🇬🇧 GBP</SelectItem>
-                  <SelectItem value="CAD" className="text-white">🇨🇦 CAD</SelectItem>
-                  <SelectItem value="JPY" className="text-white">🇯🇵 JPY</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={selectedImpact} onValueChange={setSelectedImpact}>
-                <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
-                  <SelectValue placeholder="Impact" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="all" className="text-white">All Impact</SelectItem>
-                  <SelectItem value="high" className="text-white">High</SelectItem>
-                  <SelectItem value="medium" className="text-white">Medium</SelectItem>
-                  <SelectItem value="low" className="text-white">Low</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {!error && (
+              <div className="flex gap-2">
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
+                    <SelectValue placeholder="Country" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 border-gray-600">
+                    <SelectItem value="all" className="text-white">All Countries</SelectItem>
+                    <SelectItem value="USD" className="text-white">🇺🇸 USD</SelectItem>
+                    <SelectItem value="EUR" className="text-white">🇪🇺 EUR</SelectItem>
+                    <SelectItem value="GBP" className="text-white">🇬🇧 GBP</SelectItem>
+                    <SelectItem value="CAD" className="text-white">🇨🇦 CAD</SelectItem>
+                    <SelectItem value="JPY" className="text-white">🇯🇵 JPY</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Select value={selectedImpact} onValueChange={setSelectedImpact}>
+                  <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
+                    <SelectValue placeholder="Impact" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 border-gray-600">
+                    <SelectItem value="all" className="text-white">All Impact</SelectItem>
+                    <SelectItem value="high" className="text-white">High</SelectItem>
+                    <SelectItem value="medium" className="text-white">Medium</SelectItem>
+                    <SelectItem value="low" className="text-white">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent>
@@ -188,15 +215,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
               ))}
             </div>
           ) : error ? (
-            <div className="text-center py-8">
-              <div className="text-red-400 mb-4">Failed to load economic events</div>
-              <button 
-                onClick={() => refetch()} 
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Retry
-              </button>
-            </div>
+            <ErrorState />
           ) : (
             <div className="space-y-4">
               {displayEvents.map((event) => (
@@ -240,7 +259,7 @@ const EconomicCalendar = ({ preview = false }: EconomicCalendarProps) => {
                 </Card>
               ))}
               
-              {displayEvents.length === 0 && (
+              {displayEvents.length === 0 && !error && (
                 <div className="text-center py-8">
                   <div className="text-gray-400 mb-2">No events match your filters</div>
                   <div className="text-sm text-gray-500">Try adjusting your country or impact level filters</div>

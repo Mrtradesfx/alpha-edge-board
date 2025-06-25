@@ -84,6 +84,8 @@ export const useEconomicCalendar = (countries: string[] = ['United States']) => 
   return useQuery({
     queryKey: ['economic-calendar', countries],
     queryFn: async () => {
+      console.log('Fetching economic calendar data...');
+      
       const countryQueries = countries.map(country => 
         encodeURIComponent(country)
       ).join(',');
@@ -97,8 +99,12 @@ export const useEconomicCalendar = (countries: string[] = ['United States']) => 
         }
       );
 
+      console.log('API Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Error:', response.status, errorText);
+        throw new Error(`Trading Economics API Error: ${response.status} - ${errorText}`);
       }
 
       const data: EconomicEvent[] = await response.json();
@@ -111,9 +117,12 @@ export const useEconomicCalendar = (countries: string[] = ['United States']) => 
         return eventDate === today;
       });
 
+      console.log('Today\'s events:', todayEvents.length);
       return processEvents(todayEvents);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+    retry: 2, // Retry failed requests twice
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 };
