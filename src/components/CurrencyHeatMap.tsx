@@ -37,17 +37,28 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   const { priceData } = usePriceData();
   
   // Generate timeframe data for each asset
-  const generateTimeframeData = () => {
-    const timeframes = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'];
-    const data: Record<string, number> = {};
-    
-    timeframes.forEach(tf => {
-      // Generate realistic percentage changes for each timeframe
-      const baseChange = (Math.random() - 0.5) * 20; // -10% to +10%
-      data[tf] = baseChange;
-    });
-    
-    return data;
+  const generateTimeframeData = (): {
+    M1: number;
+    M5: number;
+    M15: number;
+    M30: number;
+    H1: number;
+    H4: number;
+    D1: number;
+    W1: number;
+    MN: number;
+  } => {
+    return {
+      M1: (Math.random() - 0.5) * 4,   // -2% to +2%
+      M5: (Math.random() - 0.5) * 6,   // -3% to +3%
+      M15: (Math.random() - 0.5) * 8,  // -4% to +4%
+      M30: (Math.random() - 0.5) * 10, // -5% to +5%
+      H1: (Math.random() - 0.5) * 12,  // -6% to +6%
+      H4: (Math.random() - 0.5) * 16,  // -8% to +8%
+      D1: (Math.random() - 0.5) * 20,  // -10% to +10%
+      W1: (Math.random() - 0.5) * 30,  // -15% to +15%
+      MN: (Math.random() - 0.5) * 50   // -25% to +25%
+    };
   };
 
   // Combine asset data with price data and timeframe data
