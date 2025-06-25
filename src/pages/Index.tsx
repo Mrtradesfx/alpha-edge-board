@@ -36,7 +36,11 @@ const Index = () => {
   };
 
   const handleMenuClick = () => {
-    setSidebarOpen(!sidebarOpen);
+    setSidebarOpen(true);
+  };
+
+  const handleSidebarToggle = (isOpen: boolean) => {
+    setSidebarOpen(isOpen);
   };
 
   const renderContent = () => {
@@ -149,7 +153,8 @@ const Index = () => {
         <ModernSidebar
           activeTab={activeSection}
           onTabChange={setActiveSection}
-          onToggle={setSidebarOpen}
+          onToggle={handleSidebarToggle}
+          isOpen={sidebarOpen}
         />
         
         {/* Main content area with proper responsive margins */}

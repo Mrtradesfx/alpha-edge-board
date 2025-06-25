@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -24,6 +24,7 @@ interface ModernSidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onToggle?: (isOpen: boolean) => void;
+  isOpen?: boolean;
 }
 
 const sidebarItems = [
@@ -40,12 +41,21 @@ const sidebarItems = [
   { id: "ai-coach", label: "AI Trade Coach", icon: Brain },
 ];
 
-const ModernSidebar = ({ activeTab, onTabChange, onToggle }: ModernSidebarProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+const ModernSidebar = ({ activeTab, onTabChange, onToggle, isOpen: propIsOpen }: ModernSidebarProps) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  
+  // Use prop isOpen if provided, otherwise use internal state
+  const isOpen = propIsOpen !== undefined ? propIsOpen : internalIsOpen;
 
   const handleToggle = (newState: boolean) => {
-    setIsOpen(newState);
-    onToggle?.(newState);
+    if (propIsOpen !== undefined) {
+      // If controlled by parent, notify parent
+      onToggle?.(newState);
+    } else {
+      // If internal state, update internal state
+      setInternalIsOpen(newState);
+      onToggle?.(newState);
+    }
   };
 
   return (
