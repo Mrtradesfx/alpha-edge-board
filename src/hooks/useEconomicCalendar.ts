@@ -84,74 +84,34 @@ export const useEconomicCalendar = (countries: string[] = ['United States']) => 
   return useQuery({
     queryKey: ['economic-calendar', countries],
     queryFn: async () => {
-      try {
-        const countryQueries = countries.map(country => 
-          encodeURIComponent(country)
-        ).join(',');
-        
-        const response = await fetch(
-          `https://api.tradingeconomics.com/calendar/country/${countryQueries}?c=guest:guest`,
-          {
-            headers: {
-              'Accept': 'application/json',
-            }
+      const countryQueries = countries.map(country => 
+        encodeURIComponent(country)
+      ).join(',');
+      
+      const response = await fetch(
+        `https://api.tradingeconomics.com/calendar/country/${countryQueries}?c=guest:guest`,
+        {
+          headers: {
+            'Accept': 'application/json',
           }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
         }
+      );
 
-        const data: EconomicEvent[] = await response.json();
-        console.log('Economic calendar data fetched:', data.length, 'events');
-        
-        // Filter for today's events and process them
-        const today = new Date().toDateString();
-        const todayEvents = data.filter(event => {
-          const eventDate = new Date(event.Date).toDateString();
-          return eventDate === today;
-        });
-
-        return processEvents(todayEvents);
-      } catch (error) {
-        console.error('Economic calendar API error:', error);
-        // Return fallback mock data
-        return [
-          {
-            id: 'fallback-1',
-            time: '08:30',
-            country: 'USD',
-            event: 'Non-Farm Payrolls',
-            impact: 'high' as const,
-            forecast: '200K',
-            previous: '187K',
-            actual: null,
-            currency: 'USD'
-          },
-          {
-            id: 'fallback-2',
-            time: '10:00',
-            country: 'EUR',
-            event: 'ECB Interest Rate Decision',
-            impact: 'high' as const,
-            forecast: '4.00%',
-            previous: '4.00%',
-            actual: null,
-            currency: 'EUR'
-          },
-          {
-            id: 'fallback-3',
-            time: '14:00',
-            country: 'GBP',
-            event: 'GDP q/q',
-            impact: 'medium' as const,
-            forecast: '0.3%',
-            previous: '0.1%',
-            actual: null,
-            currency: 'GBP'
-          }
-        ];
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data: EconomicEvent[] = await response.json();
+      console.log('Economic calendar data fetched:', data.length, 'events');
+      
+      // Filter for today's events and process them
+      const today = new Date().toDateString();
+      const todayEvents = data.filter(event => {
+        const eventDate = new Date(event.Date).toDateString();
+        return eventDate === today;
+      });
+
+      return processEvents(todayEvents);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
