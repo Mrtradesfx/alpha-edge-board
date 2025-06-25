@@ -110,4 +110,4 @@ declare global {
   }
 }
 
-export default TradingView;
+export default TradingViewChart;
