@@ -15,6 +15,7 @@ import AITradeCoach from "@/components/AITradeCoach";
 import SmartAlerts from "@/components/SmartAlerts";
 import TradingViewBanner from "@/components/TradingViewBanner";
 import TradingViewChart from "@/components/TradingViewChart";
+import ChatRoom from "@/components/ChatRoom";
 import { TrendingUp, DollarSign, Newspaper, LineChart } from "lucide-react";
 
 const Index = () => {
@@ -108,6 +109,8 @@ const Index = () => {
         return <AssetSentimentSelector />;
       case "news":
         return <NewsAggregator />;
+      case "chatroom":
+        return <ChatRoom />;
       case "smart-alerts":
         return <SmartAlerts />;
       case "ai-analysis":

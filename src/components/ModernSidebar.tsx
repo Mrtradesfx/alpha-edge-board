@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,8 @@ import {
   Settings,
   User,
   Brain,
-  Bell
+  Bell,
+  MessageSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +33,7 @@ const sidebarItems = [
   { id: "sentiment", label: "Market Sentiment", icon: Activity },
   { id: "asset-sentiment", label: "Asset Analysis", icon: Target },
   { id: "news", label: "News Feed", icon: Newspaper },
+  { id: "chatroom", label: "Community Chat", icon: MessageSquare },
   { id: "smart-alerts", label: "Smart Alerts", icon: Bell },
   { id: "ai-analysis", label: "AI Analysis", icon: Brain },
   { id: "ai-coach", label: "AI Trade Coach", icon: Brain },
