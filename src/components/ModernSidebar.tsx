@@ -60,20 +60,20 @@ const ModernSidebar = ({ activeTab, onTabChange, onToggle, isOpen: propIsOpen }:
 
   return (
     <>
-      {/* Mobile overlay - only show when sidebar is open and only cover content area */}
+      {/* Mobile overlay - only show when sidebar is open */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 lg:hidden z-40 left-64"
+          className="fixed inset-0 bg-black/50 lg:hidden z-40"
           onClick={() => handleToggle(false)}
         />
       )}
 
-      {/* Sidebar - covers full height on mobile */}
+      {/* Sidebar - completely hidden when closed on mobile */}
       <div className={cn(
         "fixed left-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 z-50",
         "lg:translate-x-0 lg:static lg:h-screen lg:w-64",
         "lg:top-0",
-        isOpen ? "translate-x-0 w-64 top-0 h-screen" : "-translate-x-full w-0 lg:w-16 top-16 h-[calc(100vh-64px)]"
+        isOpen ? "translate-x-0 w-64 top-0 h-screen" : "-translate-x-full w-64 top-16 h-[calc(100vh-64px)] lg:w-16"
       )}>
         {/* Header - show on mobile when open */}
         {isOpen && (
