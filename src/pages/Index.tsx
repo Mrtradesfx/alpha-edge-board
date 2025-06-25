@@ -1,90 +1,69 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import COTDashboard from "@/components/COTDashboard";
 import EconomicCalendar from "@/components/EconomicCalendar";
 import SentimentAnalysis from "@/components/SentimentAnalysis";
 import AssetSentimentSelector from "@/components/AssetSentimentSelector";
 import NewsAggregator from "@/components/NewsAggregator";
 import CurrencyHeatMap from "@/components/CurrencyHeatMap";
-import Navigation from "@/components/Navigation";
-import AuthModal from "@/components/AuthModal";
-import { TrendingUp, Calendar, Activity, Newspaper, DollarSign, Target } from "lucide-react";
+import ModernSidebar from "@/components/ModernSidebar";
+import ModernHeader from "@/components/ModernHeader";
+import ModernStatsCard from "@/components/ModernStatsCard";
+import { TrendingUp, Calendar, Activity, Newspaper, DollarSign, Target, Users, BarChart3 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <Navigation 
-        isAuthenticated={isAuthenticated}
-        onAuthClick={() => setIsAuthModalOpen(true)}
-        onLogout={() => setIsAuthenticated(false)}
-      />
-      
-      <div className="container mx-auto px-4 py-8">
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
-            Quantide
-          </h1>
-          <p className="text-xl text-gray-300 mb-6">
-            Real-time trading data, simplified.
-          </p>
-          <div className="flex justify-center gap-4 text-sm text-gray-400">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              Live Data
+  const renderContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return (
+          <div className="space-y-6">
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <ModernStatsCard
+                title="Total Assets Tracked"
+                value="2,382"
+                change="+8.2%"
+                changeType="positive"
+                icon={DollarSign}
+                iconColor="bg-blue-500"
+              />
+              <ModernStatsCard
+                title="Active Positions"
+                value="64"
+                change="-2.5%"
+                changeType="negative"
+                icon={TrendingUp}
+                iconColor="bg-green-500"
+              />
+              <ModernStatsCard
+                title="Market Sentiment"
+                value="Bullish"
+                change="Strong"
+                changeType="positive"
+                icon={Activity}
+                iconColor="bg-purple-500"
+              />
+              <ModernStatsCard
+                title="Daily Volume"
+                value="$21.3M"
+                change="+12.4%"
+                changeType="positive"
+                icon={BarChart3}
+                iconColor="bg-orange-500"
+              />
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              Real-time Updates
-            </div>
-          </div>
-        </div>
 
-        {/* Dashboard Content */}
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-7 bg-gray-800/50 border border-gray-700">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-gray-700">
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="heatmap" className="data-[state=active]:bg-gray-700">
-              <DollarSign className="w-4 h-4 mr-2" />
-              Heat Map
-            </TabsTrigger>
-            <TabsTrigger value="cot" className="data-[state=active]:bg-gray-700">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              COT Data
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="data-[state=active]:bg-gray-700">
-              <Calendar className="w-4 h-4 mr-2" />
-              Economic
-            </TabsTrigger>
-            <TabsTrigger value="sentiment" className="data-[state=active]:bg-gray-700">
-              <Activity className="w-4 h-4 mr-2" />
-              Market
-            </TabsTrigger>
-            <TabsTrigger value="asset-sentiment" className="data-[state=active]:bg-gray-700">
-              <Target className="w-4 h-4 mr-2" />
-              Asset
-            </TabsTrigger>
-            <TabsTrigger value="news" className="data-[state=active]:bg-gray-700">
-              <Newspaper className="w-4 h-4 mr-2" />
-              News
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
-            {/* Overview Dashboard Grid */}
+            {/* Main Dashboard Content */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-green-500" />
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+                    <DollarSign className="w-5 h-5 text-blue-500" />
                     Asset Heat Map
                   </CardTitle>
                 </CardHeader>
@@ -93,9 +72,9 @@ const Index = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <TrendingUp className="w-5 h-5 text-green-500" />
                     COT Summary
                   </CardTitle>
@@ -105,9 +84,9 @@ const Index = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Calendar className="w-5 h-5 text-blue-500" />
                     Today's Events
                   </CardTitle>
@@ -117,9 +96,9 @@ const Index = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Activity className="w-5 h-5 text-purple-500" />
                     Market Sentiment
                   </CardTitle>
@@ -129,9 +108,9 @@ const Index = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm lg:col-span-2">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 lg:col-span-2">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Newspaper className="w-5 h-5 text-orange-500" />
                     Latest News
                   </CardTitle>
@@ -141,42 +120,42 @@ const Index = () => {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          </div>
+        );
+      case "heatmap":
+        return <CurrencyHeatMap />;
+      case "cot":
+        return <COTDashboard />;
+      case "calendar":
+        return <EconomicCalendar />;
+      case "sentiment":
+        return <SentimentAnalysis />;
+      case "asset-sentiment":
+        return <AssetSentimentSelector />;
+      case "news":
+        return <NewsAggregator />;
+      default:
+        return null;
+    }
+  };
 
-          <TabsContent value="heatmap">
-            <CurrencyHeatMap />
-          </TabsContent>
-
-          <TabsContent value="cot">
-            <COTDashboard />
-          </TabsContent>
-
-          <TabsContent value="calendar">
-            <EconomicCalendar />
-          </TabsContent>
-
-          <TabsContent value="sentiment">
-            <SentimentAnalysis />
-          </TabsContent>
-
-          <TabsContent value="asset-sentiment">
-            <AssetSentimentSelector />
-          </TabsContent>
-
-          <TabsContent value="news">
-            <NewsAggregator />
-          </TabsContent>
-        </Tabs>
-      </div>
-
-      <AuthModal 
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={() => {
-          setIsAuthenticated(true);
-          setIsAuthModalOpen(false);
-        }}
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <ModernSidebar 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab}
       />
+      
+      <div className={cn(
+        "transition-all duration-300",
+        sidebarCollapsed ? "ml-16" : "ml-64"
+      )}>
+        <ModernHeader sidebarCollapsed={sidebarCollapsed} />
+        
+        <main className="p-6">
+          {renderContent()}
+        </main>
+      </div>
     </div>
   );
 };
