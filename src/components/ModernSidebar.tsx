@@ -32,6 +32,7 @@ const sidebarItems = [
   { id: "asset-sentiment", label: "Asset Analysis", icon: Target },
   { id: "news", label: "News Feed", icon: Newspaper },
   { id: "ai-analysis", label: "AI Analysis", icon: Brain },
+  { id: "ai-coach", label: "AI Trade Coach", icon: Brain },
 ];
 
 const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {

@@ -12,6 +12,7 @@ import ModernHeader from "@/components/ModernHeader";
 import ModernStatsCard from "@/components/ModernStatsCard";
 import NewsGlobe from "@/components/NewsGlobe";
 import AINewsAnalyzer from "@/components/AINewsAnalyzer";
+import AITradeCoach from "@/components/AITradeCoach";
 import { TrendingUp, Activity, Newspaper, DollarSign, Target, Users, BarChart3 } from "lucide-react";
 
 const Index = () => {
@@ -128,6 +129,8 @@ const Index = () => {
         return <NewsAggregator />;
       case "ai-analysis":
         return <AINewsAnalyzer />;
+      case "ai-coach":
+        return <AITradeCoach />;
       default:
         return null;
     }
