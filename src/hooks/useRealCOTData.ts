@@ -43,13 +43,50 @@ export const useRealCOTData = (assetSymbol: string) => {
         console.log(`No COT data found for ${assetSymbol}, triggering data fetch`);
         
         // Trigger data fetch from CFTC
-        const { error: functionError } = await supabase.functions.invoke('fetch-cot-data');
-        
-        if (functionError) {
-          console.error('Error calling fetch-cot-data function:', functionError);
+        try {
+          const { data: fetchResult, error: functionError } = await supabase.functions.invoke('fetch-cot-data');
+          
+          if (functionError) {
+            console.error('Error calling fetch-cot-data function:', functionError);
+            throw new Error(`Failed to fetch COT data: ${functionError.message}`);
+          }
+          
+          console.log('COT data fetch result:', fetchResult);
+          
+          // Wait a moment and try fetching again
+          setTimeout(async () => {
+            try {
+              const { data: retryData, error: retryError } = await supabase
+                .from('cot_reports')
+                .select('*')
+                .eq('asset_symbol', assetSymbol)
+                .order('report_date', { ascending: false })
+                .limit(52);
+              
+              if (!retryError && retryData && retryData.length > 0) {
+                const transformedData: COTDataPoint[] = retryData
+                  .reverse()
+                  .map((report: COTReport) => ({
+                    date: new Date(report.report_date).toLocaleDateString(),
+                    commercial: report.commercial_net,
+                    nonCommercial: report.non_commercial_net,
+                    total: report.total_open_interest,
+                  }));
+                
+                console.log(`Loaded ${transformedData.length} COT data points for ${assetSymbol} after retry`);
+                setData(transformedData);
+                setLastUpdated(new Date());
+              }
+            } catch (retryErr) {
+              console.error('Retry fetch failed:', retryErr);
+            }
+          }, 3000);
+          
+        } catch (err) {
+          console.error('Edge function call failed:', err);
+          setError(`Failed to fetch COT data: ${err instanceof Error ? err.message : 'Unknown error'}`);
         }
         
-        // Set empty data for now
         setData([]);
         setLastUpdated(new Date());
         return;
@@ -83,7 +120,15 @@ export const useRealCOTData = (assetSymbol: string) => {
     
     try {
       // Trigger fresh data fetch from CFTC
-      await supabase.functions.invoke('fetch-cot-data');
+      const { data: fetchResult, error: functionError } = await supabase.functions.invoke('fetch-cot-data');
+      
+      if (functionError) {
+        console.error('Error calling fetch-cot-data function:', functionError);
+        setError(`Failed to refresh COT data: ${functionError.message}`);
+        return;
+      }
+      
+      console.log('COT data refresh result:', fetchResult);
       
       // Wait a moment then refetch our data
       setTimeout(() => {
@@ -92,6 +137,7 @@ export const useRealCOTData = (assetSymbol: string) => {
       
     } catch (err) {
       console.error('Error refreshing COT data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to refresh COT data');
     }
   };
 

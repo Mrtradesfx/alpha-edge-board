@@ -9,7 +9,7 @@ import COTCharts from "@/components/COTCharts";
 import COTSummaryCards from "@/components/COTSummaryCards";
 import { useRealCOTData, useRealCOTComparison } from "@/hooks/useRealCOTData";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Database, AlertCircle } from "lucide-react";
+import { RefreshCw, Database, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface COTDashboardProps {
@@ -93,6 +93,11 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
                   <span className={usingRealData ? "text-green-400" : "text-yellow-400"}>
                     {usingRealData ? "Live CFTC Data" : "Mock Data"}
                   </span>
+                  {usingRealData ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <Clock className="w-4 h-4 text-yellow-400" />
+                  )}
                 </div>
                 <Button
                   variant="outline"
@@ -110,7 +115,24 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
               <Alert className="bg-red-900/20 border-red-500/30">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription className="text-red-400">
-                  {primaryError || comparisonError}. Using fallback data.
+                  <div className="font-semibold mb-1">Data Loading Issue</div>
+                  <div className="text-sm">{primaryError || comparisonError}</div>
+                  <div className="text-xs mt-1 opacity-75">
+                    {usingRealData ? 'Using cached data.' : 'Using mock data for demonstration.'}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {!usingRealData && !hasError && (
+              <Alert className="bg-yellow-900/20 border-yellow-500/30">
+                <Clock className="h-4 w-4" />
+                <AlertDescription className="text-yellow-400">
+                  <div className="font-semibold mb-1">Mock Data Mode</div>
+                  <div className="text-sm">
+                    COT data is currently simulated for demonstration purposes. 
+                    Click refresh to attempt loading real CFTC data.
+                  </div>
                 </AlertDescription>
               </Alert>
             )}
@@ -161,6 +183,9 @@ const COTDashboard = ({ preview = false }: COTDashboardProps) => {
                 <div className="text-center">
                   <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-gray-400" />
                   <p className="text-gray-400">Loading COT data...</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {usingRealData ? 'Fetching from CFTC database...' : 'Preparing demonstration data...'}
+                  </p>
                 </div>
               </div>
             ) : (
