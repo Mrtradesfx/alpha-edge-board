@@ -33,49 +33,66 @@ const sidebarItems = [
 ];
 
 const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
+      {/* Mobile Menu Button - Fixed position */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsOpen(!isOpen)}
+          className="bg-white/90 backdrop-blur-sm border-gray-200 shadow-lg"
+        >
+          <Menu className="w-4 h-4" />
+        </Button>
+      </div>
+
       {/* Mobile overlay */}
-      {!isCollapsed && (
+      {isOpen && (
         <div 
           className="fixed inset-0 bg-black/50 lg:hidden z-40"
-          onClick={() => setIsCollapsed(true)}
+          onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={cn(
         "fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 z-50",
-        isCollapsed ? "w-16" : "w-64"
+        "lg:translate-x-0 lg:static lg:h-screen lg:w-64",
+        isOpen ? "translate-x-0 w-64" : "-translate-x-full w-0 lg:w-16"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
-          {!isCollapsed && (
+        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-800 h-16">
+          {(!isOpen && "lg:block") || isOpen ? (
             <div className="flex items-center gap-2">
-              <div className="text-xl font-bold text-gray-900 dark:text-white">Quantide</div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">Quantide</div>
               <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs">
                 Live
               </Badge>
             </div>
-          )}
+          ) : null}
+          
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1.5"
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-1.5 lg:hidden"
           >
-            {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
+            <X className="w-4 h-4" />
           </Button>
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-2">
+        <nav className="p-3 space-y-1 overflow-y-auto">
           {sidebarItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => onTabChange(item.id)}
+              onClick={() => {
+                onTabChange(item.id);
+                setIsOpen(false); // Close mobile menu after selection
+              }}
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
                 activeTab === item.id
@@ -84,19 +101,19 @@ const ModernSidebar = ({ activeTab, onTabChange }: ModernSidebarProps) => {
               )}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && <span>{item.label}</span>}
+              {(isOpen || "lg:hidden") && <span className="truncate">{item.label}</span>}
             </button>
           ))}
         </nav>
 
-        {/* Footer */}
-        {!isCollapsed && (
-          <div className="absolute bottom-4 left-4 right-4 space-y-2">
-            <Button variant="ghost" size="sm" className="w-full justify-start">
+        {/* Footer - only show when expanded */}
+        {isOpen && (
+          <div className="absolute bottom-4 left-3 right-3 space-y-1">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-sm">
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
-            <Button variant="ghost" size="sm" className="w-full justify-start">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-sm">
               <User className="w-4 h-4 mr-2" />
               Profile
             </Button>
