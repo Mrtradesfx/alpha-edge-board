@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { fetchRealPrices, generateMockPrices } from '@/services/priceService';
+import { fetchRealPrices } from '@/services/priceService';
 
 interface PriceData {
   [asset: string]: {
@@ -14,11 +14,13 @@ export const usePriceData = () => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [isRealData, setIsRealData] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const updatePrices = async () => {
     try {
       setIsLoading(true);
-      console.log('Fetching real price data...');
+      setError(null);
+      console.log('Fetching real price data from Alpha Vantage...');
       
       const realPrices = await fetchRealPrices();
       
@@ -26,16 +28,16 @@ export const usePriceData = () => {
         setPriceData(realPrices);
         setIsRealData(true);
         setLastUpdated(new Date());
-        console.log('Successfully loaded real price data for', Object.keys(realPrices).length, 'assets');
+        console.log('Successfully loaded Alpha Vantage price data for', Object.keys(realPrices).length, 'assets');
       } else {
-        throw new Error('No real price data received');
+        throw new Error('No price data received from Alpha Vantage');
       }
     } catch (error) {
-      console.log('Real price feed failed, using mock data:', error);
-      const mockPrices = generateMockPrices();
-      setPriceData(mockPrices);
+      console.error('Alpha Vantage price feed failed:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch price data');
       setIsRealData(false);
-      setLastUpdated(new Date());
+      // Don't fallback to mock data - show error instead
+      setPriceData({});
     } finally {
       setIsLoading(false);
     }
@@ -44,8 +46,8 @@ export const usePriceData = () => {
   useEffect(() => {
     updatePrices();
     
-    // Update every 60 seconds for real data (to avoid rate limits)
-    const interval = setInterval(updatePrices, 60000);
+    // Update every 2 minutes (Alpha Vantage free tier limit)
+    const interval = setInterval(updatePrices, 120000);
 
     return () => clearInterval(interval);
   }, []);
@@ -55,6 +57,7 @@ export const usePriceData = () => {
     lastUpdated, 
     isRealData, 
     isLoading,
+    error,
     refetch: updatePrices 
   };
 };
