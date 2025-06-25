@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import COTDashboard from "@/components/COTDashboard";
@@ -13,6 +12,7 @@ import ModernStatsCard from "@/components/ModernStatsCard";
 import NewsGlobe from "@/components/NewsGlobe";
 import AINewsAnalyzer from "@/components/AINewsAnalyzer";
 import AITradeCoach from "@/components/AITradeCoach";
+import SmartAlerts from "@/components/SmartAlerts";
 import { TrendingUp, Activity, Newspaper, DollarSign, Target, Users, BarChart3 } from "lucide-react";
 
 const Index = () => {
@@ -127,6 +127,8 @@ const Index = () => {
         return <AssetSentimentSelector />;
       case "news":
         return <NewsAggregator />;
+      case "smart-alerts":
+        return <SmartAlerts />;
       case "ai-analysis":
         return <AINewsAnalyzer />;
       case "ai-coach":
