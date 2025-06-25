@@ -1,14 +1,17 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Search, Settings, User } from "lucide-react";
+import { Bell, Search, Settings, User, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface ModernHeaderProps {
   sidebarCollapsed: boolean;
 }
 
 const ModernHeader = ({ sidebarCollapsed }: ModernHeaderProps) => {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <header className={cn(
       "sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-all",
@@ -39,6 +42,10 @@ const ModernHeader = ({ sidebarCollapsed }: ModernHeaderProps) => {
             <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 bg-red-500 text-white text-xs">
               3
             </Badge>
+          </Button>
+          
+          <Button variant="ghost" size="sm" onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </Button>
           
           <Button variant="ghost" size="sm">
