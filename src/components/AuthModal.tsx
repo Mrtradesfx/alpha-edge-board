@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star, TrendingUp, Zap } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Check, Star, TrendingUp, Zap, AlertCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -20,20 +20,41 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { toast } = useToast();
+  const [fullName, setFullName] = useState("");
+  const [error, setError] = useState("");
+  const { signIn, signUp } = useAuth();
 
   const handleAuth = async (type: "login" | "signup") => {
+    if (!email || !password) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setIsLoading(true);
+    setError("");
     
-    // Mock authentication
-    setTimeout(() => {
+    try {
+      const { error } = type === "login" 
+        ? await signIn(email, password)
+        : await signUp(email, password, fullName);
+      
+      if (!error) {
+        onSuccess();
+        onClose();
+        setEmail("");
+        setPassword("");
+        setFullName("");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
       setIsLoading(false);
-      toast({
-        title: type === "login" ? "Welcome back!" : "Account created!",
-        description: type === "login" ? "Successfully logged in." : "Your account has been created successfully.",
-      });
-      onSuccess();
-    }, 1500);
+    }
   };
 
   const features = [
@@ -65,6 +86,13 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                 </TabsTrigger>
               </TabsList>
               
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-red-900/20 border border-red-500/30 rounded-md">
+                  <AlertCircle className="w-4 h-4 text-red-400" />
+                  <span className="text-sm text-red-300">{error}</span>
+                </div>
+              )}
+              
               <TabsContent value="login" className="space-y-4">
                 <div className="space-y-4">
                   <div>
@@ -76,6 +104,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="bg-gray-800 border-gray-600 text-white"
                       placeholder="trader@example.com"
+                      disabled={isLoading}
                     />
                   </div>
                   <div>
@@ -87,6 +116,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                       onChange={(e) => setPassword(e.target.value)}
                       className="bg-gray-800 border-gray-600 text-white"
                       placeholder="••••••••"
+                      disabled={isLoading}
                     />
                   </div>
                   <Button 
@@ -102,6 +132,18 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
               <TabsContent value="signup" className="space-y-4">
                 <div className="space-y-4">
                   <div>
+                    <Label htmlFor="signup-name">Full Name</Label>
+                    <Input
+                      id="signup-name"
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      placeholder="John Doe"
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div>
                     <Label htmlFor="signup-email">Email</Label>
                     <Input
                       id="signup-email"
@@ -110,6 +152,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="bg-gray-800 border-gray-600 text-white"
                       placeholder="trader@example.com"
+                      disabled={isLoading}
                     />
                   </div>
                   <div>
@@ -121,6 +164,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                       onChange={(e) => setPassword(e.target.value)}
                       className="bg-gray-800 border-gray-600 text-white"
                       placeholder="••••••••"
+                      disabled={isLoading}
                     />
                   </div>
                   <Button 

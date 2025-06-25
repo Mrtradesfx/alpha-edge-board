@@ -1,142 +1,183 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import COTDashboard from "@/components/COTDashboard";
-import EconomicCalendar from "@/components/EconomicCalendar";
-import SentimentAnalysis from "@/components/SentimentAnalysis";
-import AssetSentimentSelector from "@/components/AssetSentimentSelector";
-import NewsAggregator from "@/components/NewsAggregator";
-import CurrencyHeatMap from "@/components/CurrencyHeatMap";
 import ModernSidebar from "@/components/ModernSidebar";
 import ModernHeader from "@/components/ModernHeader";
-import NewsGlobe from "@/components/NewsGlobe";
+import ModernStatsCard from "@/components/ModernStatsCard";
+import COTDashboard from "@/components/COTDashboard";
+import SentimentAnalysis from "@/components/SentimentAnalysis";
+import NewsAggregator from "@/components/NewsAggregator";
+import EconomicCalendar from "@/components/EconomicCalendar";
+import TradingViewChart from "@/components/TradingViewChart";
+import TradingViewBanner from "@/components/TradingViewBanner";
+import SecureSmartAlerts from "@/components/SecureSmartAlerts";
+import ChatRoom from "@/components/ChatRoom";
 import AINewsAnalyzer from "@/components/AINewsAnalyzer";
 import AITradeCoach from "@/components/AITradeCoach";
-import SmartAlerts from "@/components/SmartAlerts";
-import TradingViewBanner from "@/components/TradingViewBanner";
-import TradingViewChart from "@/components/TradingViewChart";
-import ChatRoom from "@/components/ChatRoom";
-import { TrendingUp, DollarSign, Newspaper, LineChart } from "lucide-react";
+import Navigation from "@/components/Navigation";
+import AuthModal from "@/components/AuthModal";
+import CurrencyHeatMap from "@/components/CurrencyHeatMap";
+import NewsGlobe from "@/components/NewsGlobe";
+import { TrendingUp, DollarSign, BarChart3, Bell, Shield } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("overview");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [activeSection, setActiveSection] = useState("overview");
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const { user } = useAuth();
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+  };
+
+  const handleLogout = () => {
+    // Additional logout logic if needed
+  };
+
+  // Mock stats data
+  const statsData = [
+    {
+      title: "Portfolio Value",
+      value: "$124,563",
+      change: "+12.5%",
+      trend: "up" as const,
+      icon: DollarSign,
+    },
+    {
+      title: "Active Alerts",
+      value: "8",
+      change: "+2",
+      trend: "up" as const,
+      icon: Bell,
+    },
+    {
+      title: "Win Rate",
+      value: "67.3%",
+      change: "+5.1%",
+      trend: "up" as const,
+      icon: TrendingUp,
+    },
+    {
+      title: "Risk Score",
+      value: "Medium",
+      change: "Stable",
+      trend: "neutral" as const,
+      icon: BarChart3,
+    },
+  ];
 
   const renderContent = () => {
-    switch (activeTab) {
+    switch (activeSection) {
       case "overview":
         return (
-          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-            {/* Main Dashboard Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                <CardHeader className="pb-2 sm:pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
-                    <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
-                    Asset Heat Map
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
-                  <CurrencyHeatMap preview={true} />
-                </CardContent>
-              </Card>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {statsData.map((stat, index) => (
+                <ModernStatsCard key={index} {...stat} />
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <TradingViewChart />
+              <SentimentAnalysis />
+            </div>
 
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                <CardHeader className="pb-2 sm:pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
-                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                    COT Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
-                  <COTDashboard preview={true} />
-                </CardContent>
-              </Card>
-
-              {/* NewsGlobe */}
-              <NewsGlobe />
-
-              {/* TradingView Chart with improved proportions */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-                <CardHeader className="pb-2 sm:pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
-                    <LineChart className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
-                    Price Chart
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
-                  <div className="h-80 lg:h-96">
-                    <TradingViewChart 
-                      symbol="FX:EURUSD"
-                      colorTheme="light"
-                      height="100%"
-                      autosize={true}
-                      hideSideToolbar={true}
-                      allowSymbolChange={false}
-                      hideDateRanges={false}
-                      showPopupButton={false}
-                      hideMarketStatus={true}
-                      hideSymbolSearch={true}
-                      saveImage={false}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 lg:col-span-2">
-                <CardHeader className="pb-2 sm:pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-sm sm:text-base lg:text-lg">
-                    <Newspaper className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
-                    Latest News
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 p-2 sm:p-3 lg:p-6">
-                  <NewsAggregator preview={true} />
-                </CardContent>
-              </Card>
+            <TradingViewBanner />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <NewsAggregator isPreviewMode={true} />
+              <EconomicCalendar />
             </div>
           </div>
         );
-      case "heatmap":
-        return <CurrencyHeatMap />;
+        
       case "cot":
         return <COTDashboard />;
-      case "calendar":
-        return <EconomicCalendar />;
-      case "sentiment":
-        return <SentimentAnalysis />;
-      case "asset-sentiment":
-        return <AssetSentimentSelector />;
+        
       case "news":
-        return <NewsAggregator />;
-      case "chatroom":
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <NewsAggregator isPreviewMode={false} />
+              <AINewsAnalyzer />
+            </div>
+            <NewsGlobe />
+          </div>
+        );
+        
+      case "alerts":
+        return (
+          <div className="space-y-6">
+            {!user && (
+              <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 mb-2">
+                  <Shield className="w-5 h-5" />
+                  <span className="font-medium">Enhanced Security</span>
+                </div>
+                <p className="text-sm text-blue-600 dark:text-blue-400">
+                  Our new secure alerts system stores your alerts safely in the database with end-to-end encryption. 
+                  Sign in to access your personalized, secure alerts.
+                </p>
+              </div>
+            )}
+            <SecureSmartAlerts />
+          </div>
+        );
+        
+      case "chat":
         return <ChatRoom />;
-      case "smart-alerts":
-        return <SmartAlerts />;
-      case "ai-analysis":
-        return <AINewsAnalyzer />;
+        
       case "ai-coach":
         return <AITradeCoach />;
+        
+      case "heatmap":
+        return <CurrencyHeatMap />;
+        
       default:
-        return null;
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Coming Soon
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              This section is under development.
+            </p>
+          </div>
+        );
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex w-full">
-      <ModernSidebar 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Navigation
+        isAuthenticated={!!user}
+        onAuthClick={() => setShowAuthModal(true)}
+        onLogout={handleLogout}
       />
       
-      <div className="flex-1 flex flex-col lg:ml-0">
-        <ModernHeader sidebarCollapsed={sidebarCollapsed} />
-        <TradingViewBanner />
+      <div className="flex">
+        <ModernSidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
         
-        <main className="flex-1 p-2 sm:p-3 lg:p-4 xl:p-6">
-          {renderContent()}
-        </main>
+        <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+          <ModernHeader sidebarCollapsed={sidebarCollapsed} />
+          
+          <main className="p-6 max-w-7xl mx-auto">
+            {renderContent()}
+          </main>
+        </div>
       </div>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 };
