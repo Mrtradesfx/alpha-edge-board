@@ -1,9 +1,11 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { assets } from "@/data/assets";
 import { useRealTimeAssetData } from "@/hooks/useRealTimeData";
+import { usePriceData } from "@/hooks/usePriceData";
 
 interface AssetStrength {
   asset: string;
@@ -11,6 +13,8 @@ interface AssetStrength {
   strength: number;
   change: number;
   category: string;
+  price?: number;
+  priceChange?: number;
 }
 
 interface CurrencyHeatMapProps {
@@ -19,15 +23,21 @@ interface CurrencyHeatMapProps {
 
 const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
   const { data: liveData, isLoading, isConnected, error, refetch } = useRealTimeAssetData();
+  const { priceData } = usePriceData();
   
-  // Fallback to mock data if live data is not available
-  const assetData: AssetStrength[] = liveData?.length > 0 ? liveData : assets.map(asset => ({
-    asset: asset.value,
-    name: asset.label,
-    strength: Math.floor(Math.random() * 100),
-    change: (Math.random() - 0.5) * 6,
-    category: asset.category
-  }));
+  // Combine asset data with price data
+  const assetData: AssetStrength[] = liveData?.length > 0 ? liveData : assets.map(asset => {
+    const priceInfo = priceData[asset.value];
+    return {
+      asset: asset.value,
+      name: asset.label,
+      strength: Math.floor(Math.random() * 100),
+      change: (Math.random() - 0.5) * 6,
+      category: asset.category,
+      price: priceInfo?.price,
+      priceChange: priceInfo?.change24h
+    };
+  });
 
   const getStrengthColor = (strength: number) => {
     if (strength >= 80) return "bg-green-500";
@@ -39,6 +49,20 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
 
   const getStrengthOpacity = (strength: number) => {
     return Math.max(0.3, strength / 100);
+  };
+
+  const formatPrice = (price: number | undefined, asset: string) => {
+    if (!price) return "N/A";
+    
+    if (asset.includes('/')) {
+      return price.toFixed(4);
+    } else if (asset === 'BTC' || asset === 'ETH') {
+      return price.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    } else if (asset === 'GOLD' || asset === 'SILVER') {
+      return price.toFixed(2);
+    } else {
+      return price.toFixed(2);
+    }
   };
 
   // Group assets by category
@@ -62,11 +86,14 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
             >
               <div className="font-bold text-sm">{asset.asset}</div>
               <div className="text-xs">{asset.strength}</div>
+              {asset.price && (
+                <div className="text-xs mt-1">${formatPrice(asset.price, asset.asset)}</div>
+              )}
             </div>
           ))}
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-gray-400">Asset Strength Index</span>
+          <span className="text-gray-400">Asset Strength & Prices</span>
           <div className="flex items-center gap-1">
             {isConnected ? (
               <Wifi className="w-3 h-3 text-green-400" />
@@ -85,7 +112,7 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-green-500" />
-            <CardTitle className="text-white">Heat Map</CardTitle>
+            <CardTitle className="text-white">Heat Map with Live Prices</CardTitle>
             <Badge variant={isConnected ? "default" : "destructive"} className="text-xs">
               {isConnected ? (
                 <>
@@ -111,7 +138,7 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
           </Button>
         </div>
         <p className="text-sm text-gray-400">
-          Real-time relative strength of all tradeable assets
+          Real-time relative strength and current prices of all tradeable assets
           {error && <span className="text-red-400 block">Error: {error}</span>}
         </p>
       </CardHeader>
@@ -138,7 +165,25 @@ const CurrencyHeatMap = ({ preview = false }: CurrencyHeatMapProps) => {
                     <div className="relative z-10">
                       <div className="font-bold text-sm mb-1">{asset.asset}</div>
                       <div className="text-xs opacity-90 mb-2 truncate">{asset.name}</div>
-                      <div className="font-semibold text-lg">{asset.strength}</div>
+                      
+                      {/* Price Information */}
+                      {asset.price && (
+                        <div className="bg-black/20 rounded px-2 py-1 mb-2">
+                          <div className="text-xs font-semibold">${formatPrice(asset.price, asset.asset)}</div>
+                          {asset.priceChange !== undefined && (
+                            <div className={`text-xs flex items-center gap-1 ${asset.priceChange >= 0 ? 'text-green-200' : 'text-red-200'}`}>
+                              {asset.priceChange >= 0 ? (
+                                <TrendingUp className="w-2 h-2" />
+                              ) : (
+                                <TrendingDown className="w-2 h-2" />
+                              )}
+                              {asset.priceChange >= 0 ? "+" : ""}{asset.priceChange.toFixed(1)}%
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="font-semibold text-lg">Strength: {asset.strength}</div>
                       <div className="flex items-center gap-1 text-xs">
                         {asset.change >= 0 ? (
                           <TrendingUp className="w-3 h-3" />
